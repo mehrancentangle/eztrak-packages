@@ -1,6 +1,5 @@
 {
   "name": "eztrak-packages",
-  "private": true,
   "workspaces": ["packages/*"],
   "scripts": {
     "build": "npm run build --workspaces",
