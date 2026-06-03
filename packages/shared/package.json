@@ -1,11 +1,13 @@
 {
   "name": "@eztrak/shared",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Shared hooks, utils, and UI for Eztrak federation apps",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "sideEffects": false,
   "exports": {
     ".": {
