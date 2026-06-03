@@ -8,11 +8,13 @@ Shared utilities, hooks, and UI components for Eztrak applications.
 npm install @eztrak/shared
 ```
 
-Peer dependencies for hooks:
+Peer dependencies (hooks + `handleApiError`):
 
 ```bash
-npm install react react-dom react-router-dom
+npm install react react-dom react-router-dom react-hot-toast sweetalert2
 ```
+
+Your app must render `<Toaster />` from react-hot-toast (e.g. in your root layout).
 
 ## Usage
 
@@ -25,6 +27,18 @@ import { cn, formatDate, getApiError, isEmpty } from "@eztrak/shared/utils";
 ```
 
 `cn` combines [`clsx`](https://github.com/lukeed/clsx) with [`tailwind-merge`](https://github.com/dcastil/tailwind-merge).
+
+RTK Query errors (toast or SweetAlert — no extra wiring):
+
+```js
+import { handleApiError } from "@eztrak/shared/utils";
+
+// Toasts each validation message (or a single generic error)
+handleApiError(error, { fallbackMessage: "Save failed" });
+
+// SweetAlert list for validation errors
+handleApiError(error, { showAlert: true });
+```
 
 ### Hooks
 
@@ -45,7 +59,7 @@ import { cn, useGridHeight } from "@eztrak/shared";
 | Subpath | Description |
 | --- | --- |
 | `@eztrak/shared` | Main entry — re-exports utils and hooks |
-| `@eztrak/shared/utils` | `cn`, date/format helpers, API error helpers, form field helpers |
+| `@eztrak/shared/utils` | `cn`, `handleApiError`, date/format helpers, API error helpers, form field helpers |
 | `@eztrak/shared/hooks` | `usePaginationUrlSync`, `useGridHeight` |
 
 ## Requirements

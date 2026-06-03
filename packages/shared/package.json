@@ -1,6 +1,9 @@
 {
   "name": "@eztrak/shared",
-  "version": "0.2.3",
+  "version": "0.3.1",
+
+  "homepage": "https://github.com/mehrancentangle/eztrak-packages",
+
   "description": "Shared hooks, utils, and UI for Eztrak federation apps",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -37,7 +40,9 @@
   "peerDependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-router-dom": "^6.0.0 || ^7.0.0"
+    "react-router-dom": "^6.0.0 || ^7.0.0",
+    "react-hot-toast": "^2.0.0",
+    "sweetalert2": "^11.0.0"
   },
   "peerDependenciesMeta": {
     "react-router-dom": {
@@ -52,6 +57,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.0.0",
+    "react-hot-toast": "^2.5.2",
+    "sweetalert2": "^11.22.0",
     "tsup": "^8.0.0",
     "typescript": "^5.7.0"
   }
