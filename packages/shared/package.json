@@ -1,6 +1,6 @@
 {
   "name": "@eztrak/shared",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "Shared hooks, utils, and UI for Eztrak federation apps",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -17,6 +17,11 @@
       "types": "./dist/utils/index.d.ts",
       "import": "./dist/utils/index.mjs",
       "require": "./dist/utils/index.js"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./dist/hooks/index.mjs",
+      "require": "./dist/hooks/index.js"
     }
   },
   "scripts": {
@@ -27,10 +32,24 @@
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.0.1"
   },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.0.0 || ^7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-router-dom": {
+      "optional": true
+    }
+  },
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
+    "@types/react": "^18.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.7.0"
   }
