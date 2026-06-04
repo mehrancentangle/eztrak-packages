@@ -6,7 +6,7 @@ import {
   useState,
   type KeyboardEvent,
 } from "react";
-import { cn } from "./cn";
+import { cn } from "../../utils/cn";
 import type { EztrakTab, EztrakTabsProps } from "./types";
 
 function getInitialTabId(

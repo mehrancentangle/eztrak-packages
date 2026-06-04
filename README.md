@@ -6,8 +6,7 @@ Monorepo for shared npm packages used across Eztrak applications.
 
 | Package | Description |
 | --- | --- |
-| [`@eztrak/shared`](./packages/shared) | Shared utilities, hooks, and helpers |
-| [`@eztrak/tabs`](./packages/tabs) | Themeable, accessible tab navigation |
+| [`@eztrak/shared`](./packages/shared) | Shared utilities, hooks, and components (including `EztrakTabs`) |
 
 Companion design primitives (`Button`, `Card`, `Loader`, etc.) are available separately via [`eztrak-ui`](https://www.npmjs.com/package/eztrak-ui).
 
@@ -24,7 +23,6 @@ Build a single package:
 
 ```bash
 npm run build:shared
-npm run build:tabs
 ```
 
 ## Documentation
@@ -32,7 +30,6 @@ npm run build:tabs
 See the README in each package folder for install instructions, usage examples, and API details.
 
 - [@eztrak/shared](./packages/shared/README.md)
-- [@eztrak/tabs](./packages/tabs/README.md)
 
 ## Contributing
 
