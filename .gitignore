@@ -1,4 +1,5 @@
 node_modules/
 dist/
 *.tgz
+*.md
 packages/plan-npm-packages.md
