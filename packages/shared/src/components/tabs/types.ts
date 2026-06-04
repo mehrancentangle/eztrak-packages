@@ -10,6 +10,8 @@ export type EztrakTab = {
 
 export type EztrakTabsClassNames = {
   wrapper?: string;
+  container?: string;
+  nav?: string;
   list?: string;
   item?: string;
   itemActive?: string;

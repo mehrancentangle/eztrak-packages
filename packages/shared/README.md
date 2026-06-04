@@ -128,7 +128,9 @@ const activeTab = searchParams.get("view") ?? "dashboard";
 }
 ```
 
-#### Theming — Tailwind `classNames`
+#### Theming — Tailwind `classNames` (style in JSX, no extra CSS file)
+
+Pass classes per slot — they merge with the default `eztrak-tabs-*` styles via `tailwind-merge`:
 
 ```tsx
 <EztrakTabs
@@ -136,13 +138,26 @@ const activeTab = searchParams.get("view") ?? "dashboard";
   activeTab={id}
   onTabChange={setId}
   classNames={{
-    list: "gap-3",
+    list: "mb-4",
+    content: "bg-white rounded-xl border border-gray-100 shadow-sm",
+    panel: "px-6 py-4",
     button: "rounded-full px-6",
     underline: "h-1 bg-blue-600",
-    panel: "mt-6",
   }}
 />
 ```
+
+| `classNames` key | Element |
+| --- | --- |
+| `wrapper` | Outermost wrapper (or use top-level `className`) |
+| `container` | Inner layout container |
+| `nav` | Tab navigation region |
+| `list` | Tab list (`<ul role="tablist">`) |
+| `item` / `itemActive` | Tab `<li>` |
+| `button` / `buttonActive` | Tab button |
+| `label` / `icon` / `underline` | Label, icon, active underline |
+| `content` | Panels wrapper |
+| `panel` | Each tab panel |
 
 ### Root import
 

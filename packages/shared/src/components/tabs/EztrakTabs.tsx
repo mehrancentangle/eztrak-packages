@@ -128,8 +128,11 @@ export function EztrakTabs({
 
   return (
     <div className={wrapperClass}>
-      <div className="eztrak-tabs-container">
-        <nav className="eztrak-tabs-nav" aria-label="Tabs">
+      <div className={cn("eztrak-tabs-container", classNames?.container)}>
+        <nav
+          className={cn("eztrak-tabs-nav", classNames?.nav)}
+          aria-label="Tabs"
+        >
           <ul
             role="tablist"
             className={cn("eztrak-tabs-list", classNames?.list)}
