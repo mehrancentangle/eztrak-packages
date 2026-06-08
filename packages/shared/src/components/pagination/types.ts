@@ -47,6 +47,8 @@ export interface CustomPaginationProps {
   onResetLayout?: () => void;
   renderResetControl?: (onReset: () => void) => ReactNode;
   layoutStatus?: LayoutStatus;
+  /** When true, adds an "All" option (perPage=-1) to the page-size select */
+  showAllPagesOption?: boolean;
   classNames?: CustomPaginationClassNames;
   className?: string;
 }

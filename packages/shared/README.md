@@ -123,6 +123,17 @@ import { CustomPagination } from "@eztrak/shared/components";
 />
 ```
 
+#### Show all results (no paging)
+
+```tsx
+<CustomPagination
+  paginationData={paginationData}
+  showAllPagesOption
+/>
+```
+
+When the user selects **All**, the component sets `perPage=-1` in the URL, hides page numbers, and shows `Showing All N Results`.
+
 #### Standalone reset button
 
 ```tsx
@@ -314,6 +325,7 @@ Keyboard: Arrow keys move between tabs; Home/End jump to first/last enabled tab.
 | `onResetLayout` | `() => void` | — | When set, shows a reset-columns button |
 | `renderResetControl` | `(onReset: () => void) => ReactNode` | — | Custom reset control instead of the default button |
 | `layoutStatus` | `LayoutStatus` | — | Disables reset button while layout is loading/saving/resetting |
+| `showAllPagesOption` | `boolean` | `false` | Adds an "All" option to the page-size select (`perPage=-1` in URL) |
 | `classNames` | `CustomPaginationClassNames` | — | Per-slot class overrides (`root`, `info`, `nav`, `pageButton`, `activePageButton`, `select`) |
 | `className` | `string` | — | Root wrapper class |
 

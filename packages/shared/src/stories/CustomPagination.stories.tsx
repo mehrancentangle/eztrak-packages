@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { MemoryRouter } from "react-router-dom";
 import { CustomPagination } from "../components/pagination/CustomPagination";
 
 const meta: Meta<typeof CustomPagination> = {
@@ -42,6 +43,26 @@ export const Loading: Story = {
     paginationData: null,
     isLoading: true,
   },
+};
+
+export const WithAllPagesOption: Story = {
+  args: {
+    paginationData: {
+      currentPage: 1,
+      pageCount: 1,
+      perPage: -1,
+      totalCount: 42,
+    },
+    showAllPagesOption: true,
+    className: "bg-white w-full max-w-5xl",
+  },
+  decorators: [
+    (Story) => (
+      <MemoryRouter initialEntries={["/?perPage=-1&page=1"]}>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 };
 
 export const WithResetLayout: Story = {

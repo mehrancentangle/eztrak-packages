@@ -9,6 +9,7 @@ import type {
 } from "./types";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100];
+const ALL_PAGES_VALUE = -1;
 
 function padCount(num: number) {
   return num.toString().padStart(2, "0");
@@ -105,6 +106,7 @@ export function CustomPagination({
   onResetLayout,
   renderResetControl,
   layoutStatus,
+  showAllPagesOption = false,
   classNames,
   className,
 }: CustomPaginationProps) {
@@ -113,6 +115,12 @@ export function CustomPagination({
   const perPageKey = paramNames?.perPage ?? "perPage";
   const pageSizeOptions =
     pageSizeOptionsProp ?? paginationPageSize ?? DEFAULT_PAGE_SIZE_OPTIONS;
+  const perPageParam = searchParams.get(perPageKey);
+  const perPageNumber =
+    perPageParam !== null && perPageParam !== ""
+      ? parseInt(perPageParam, 10)
+      : NaN;
+  const isShowingAll = perPageNumber === ALL_PAGES_VALUE;
 
   const currentPage = paginationData
     ? Math.max(0, paginationData.currentPage - 1)
@@ -139,7 +147,10 @@ export function CustomPagination({
 
   const handlePageSizeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const parsed = parseInt(event.target.value, 10);
-    if (!Number.isFinite(parsed) || parsed < 1) {
+    if (
+      !Number.isFinite(parsed) ||
+      (parsed < 1 && parsed !== ALL_PAGES_VALUE)
+    ) {
       return;
     }
 
@@ -257,9 +268,18 @@ export function CustomPagination({
     );
   }
 
-  const effectiveSizeOptions = pageSizeOptions.includes(paginationData.perPage)
-    ? pageSizeOptions
-    : [...pageSizeOptions, paginationData.perPage].sort((a, b) => a - b);
+  const effectiveSizeOptions =
+    paginationData.perPage > 0 &&
+    !pageSizeOptions.includes(paginationData.perPage)
+      ? [...pageSizeOptions, paginationData.perPage].sort((a, b) => a - b)
+      : pageSizeOptions;
+
+  const selectValue = isShowingAll
+    ? ALL_PAGES_VALUE
+    : paginationData.perPage ||
+      (Number.isFinite(perPageNumber) && perPageNumber > 0
+        ? perPageNumber
+        : 10);
 
   const startItem =
     paginationData.totalCount === 0
@@ -285,8 +305,9 @@ export function CustomPagination({
     >
       <div className={cn("flex-1", classNames?.info)}>
         <span className="text-xs font-medium text-neutral-400">
-          Showing {padCount(startItem)} - {padCount(endItem)} of{" "}
-          {paginationData.totalCount ?? 0} results
+          {isShowingAll
+            ? `Showing All ${paginationData.totalCount ?? 0} Results`
+            : `Showing ${padCount(startItem)} - ${padCount(endItem)} of ${paginationData.totalCount ?? 0} results`}
         </span>
       </div>
 
@@ -297,7 +318,7 @@ export function CustomPagination({
         <button
           type="button"
           onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 0}
+          disabled={currentPage === 0 || isShowingAll}
           className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           aria-label="Previous page"
         >
@@ -306,12 +327,22 @@ export function CustomPagination({
           </svg>
         </button>
 
-        <div className="flex items-center space-x-1">{createPageButtons()}</div>
+        <div className="flex items-center space-x-1">
+          {isShowingAll ? (
+            <span className="px-3 py-2 text-sm text-gray-400" aria-hidden="true">
+              All
+            </span>
+          ) : (
+            createPageButtons()
+          )}
+        </div>
 
         <button
           type="button"
           onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage >= paginationData.pageCount - 1}
+          disabled={
+            currentPage >= paginationData.pageCount - 1 || isShowingAll
+          }
           className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           aria-label="Next page"
         >
@@ -342,13 +373,16 @@ export function CustomPagination({
             </label>
             <select
               id="pagination-per-page"
-              value={paginationData.perPage || 10}
+              value={selectValue}
               onChange={handlePageSizeChange}
               className={cn(
                 "px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-white text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors",
                 classNames?.select
               )}
             >
+              {showAllPagesOption && (
+                <option value={ALL_PAGES_VALUE}>All</option>
+              )}
               {effectiveSizeOptions.map((option) => (
                 <option key={option} value={option}>
                   {option}
