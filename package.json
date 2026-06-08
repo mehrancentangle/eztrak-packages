@@ -3,6 +3,7 @@
   "workspaces": ["packages/*"],
   "scripts": {
     "build": "npm run build --workspaces",
-    "build:shared": "npm run build -w @eztrak/shared"
+    "build:shared": "npm run build -w @eztrak/shared",
+    "storybook": "npm run storybook -w @eztrak/shared"
   }
 }
