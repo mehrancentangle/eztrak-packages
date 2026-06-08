@@ -4,9 +4,16 @@ export type {
   EztrakTabsClassNames,
   EztrakTabsProps,
 } from "./tabs/types";
-export { CustomPagination } from "./pagination/CustomPagination";
+export {
+  CustomPagination,
+  ResetColumnsButton,
+  TableLayoutToolbarControls,
+} from "./pagination/CustomPagination";
 export type {
   CustomPaginationClassNames,
   CustomPaginationProps,
+  LayoutStatus,
   PaginationData,
+  ResetColumnsButtonProps,
+  TableLayoutToolbarControlsProps,
 } from "./pagination/types";

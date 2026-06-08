@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export interface PaginationData {
   currentPage: number;
   pageCount: number;
@@ -14,6 +16,25 @@ export interface CustomPaginationClassNames {
   select?: string;
 }
 
+export interface LayoutStatus {
+  isLayoutLoading?: boolean;
+  isLayoutSaving?: boolean;
+  isLayoutResetting?: boolean;
+}
+
+export interface ResetColumnsButtonProps {
+  onReset: () => void;
+  disabled?: boolean;
+  isLoading?: boolean;
+}
+
+export interface TableLayoutToolbarControlsProps {
+  layoutStatus?: LayoutStatus;
+  onResetLayout?: () => void;
+  renderResetControl?: (onReset: () => void) => ReactNode;
+  isLoading?: boolean;
+}
+
 export interface CustomPaginationProps {
   paginationData: PaginationData | null;
   /** @deprecated Use pageSizeOptions instead */
@@ -23,6 +44,9 @@ export interface CustomPaginationProps {
   paramNames?: { page?: string; perPage?: string };
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (perPage: number) => void;
+  onResetLayout?: () => void;
+  renderResetControl?: (onReset: () => void) => ReactNode;
+  layoutStatus?: LayoutStatus;
   classNames?: CustomPaginationClassNames;
   className?: string;
 }

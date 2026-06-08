@@ -86,3 +86,30 @@ export function handleApiError(
 
   toast.error(message);
 }
+
+export interface ConfirmationAlertOptions {
+  title?: string;
+  text?: string;
+  icon?: "warning" | "info" | "question" | "error" | "success";
+  confirmButtonText?: string;
+  cancelButtonText?: string;
+}
+
+export function confirmationAlert(
+  onConfirm: () => void,
+  options: ConfirmationAlertOptions = {}
+): void {
+  void Swal.fire({
+    title: options.title ?? "Are you sure?",
+    text: options.text,
+    icon: options.icon ?? "warning",
+    showCancelButton: true,
+    confirmButtonText: options.confirmButtonText ?? "Yes",
+    cancelButtonText: options.cancelButtonText ?? "Cancel",
+    confirmButtonColor: "#FF7335",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      onConfirm();
+    }
+  });
+}
