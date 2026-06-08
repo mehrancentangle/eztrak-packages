@@ -1,51 +1,71 @@
-import {
-  useEffect,
-  useState,
-  type ChangeEvent,
-  type ReactNode,
-} from "react";
+import { type ChangeEvent, type ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
+import { cn } from "../../utils/cn";
 import type { CustomPaginationProps } from "./types";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100];
 
+function padCount(num: number) {
+  return num.toString().padStart(2, "0");
+}
+
 export function CustomPagination({
   paginationData,
   paginationPageSize,
+  pageSizeOptions: pageSizeOptionsProp,
+  isLoading = false,
+  paramNames,
+  onPageChange,
+  onPageSizeChange,
+  classNames,
+  className,
 }: CustomPaginationProps) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [currentPage, setCurrentPage] = useState(0);
-  const pageSizeOptions = paginationPageSize ?? DEFAULT_PAGE_SIZE_OPTIONS;
+  const pageKey = paramNames?.page ?? "page";
+  const perPageKey = paramNames?.perPage ?? "perPage";
+  const pageSizeOptions =
+    pageSizeOptionsProp ?? paginationPageSize ?? DEFAULT_PAGE_SIZE_OPTIONS;
 
-  useEffect(() => {
-    if (paginationData) {
-      setCurrentPage(paginationData.currentPage - 1);
-    }
-  }, [paginationData]);
+  const currentPage = paginationData
+    ? Math.max(0, paginationData.currentPage - 1)
+    : 0;
 
-  const onPageChange = (pageNumber: number) => {
+  const handlePageChange = (pageNumber: number) => {
     if (
-      paginationData &&
-      pageNumber >= 0 &&
-      pageNumber < paginationData.pageCount
+      !paginationData ||
+      pageNumber < 0 ||
+      pageNumber >= paginationData.pageCount
     ) {
-      const newParams = new URLSearchParams(searchParams);
-      newParams.set("page", String(pageNumber + 1));
-      setSearchParams(newParams, { replace: true });
+      return;
     }
+
+    const safePage = Math.max(
+      1,
+      Math.min(pageNumber + 1, paginationData.pageCount)
+    );
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set(pageKey, String(safePage));
+    setSearchParams(newParams, { replace: true });
+    onPageChange?.(safePage);
   };
 
-  const onPageSizeChange = (event: ChangeEvent<HTMLSelectElement>) => {
+  const handlePageSizeChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const parsed = parseInt(event.target.value, 10);
+    if (!Number.isFinite(parsed) || parsed < 1) {
+      return;
+    }
+
     const newParams = new URLSearchParams(searchParams);
-    newParams.set("page", "1");
-    newParams.set("perPage", event.target.value);
+    newParams.set(pageKey, "1");
+    newParams.set(perPageKey, String(parsed));
     setSearchParams(newParams, { replace: true });
+    onPageSizeChange?.(parsed);
   };
 
   const createPageButtons = () => {
     const buttons: ReactNode[] = [];
     const maxButtons = 5;
-    const totalPages = paginationData?.pageCount ?? 1;
+    const totalPages = Math.max(1, paginationData?.pageCount ?? 1);
 
     let startPage = Math.max(0, currentPage - Math.floor(maxButtons / 2));
     let endPage = Math.min(totalPages - 1, startPage + maxButtons - 1);
@@ -59,8 +79,12 @@ export function CustomPagination({
         <button
           key="1"
           type="button"
-          onClick={() => onPageChange(0)}
-          className="px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+          onClick={() => handlePageChange(0)}
+          aria-label="Page 1"
+          className={cn(
+            "px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors",
+            classNames?.pageButton
+          )}
         >
           1
         </button>
@@ -68,7 +92,11 @@ export function CustomPagination({
 
       if (startPage > 1) {
         buttons.push(
-          <span key="ellipsis1" className="px-2 py-2 text-gray-400">
+          <span
+            key="ellipsis1"
+            aria-hidden="true"
+            className="px-2 py-2 text-gray-400"
+          >
             ...
           </span>
         );
@@ -76,16 +104,23 @@ export function CustomPagination({
     }
 
     for (let i = startPage; i <= endPage; i++) {
+      const isActive = currentPage === i;
       buttons.push(
         <button
           key={i + 1}
           type="button"
-          onClick={() => onPageChange(i)}
-          className={`px-3 py-2 text-sm rounded-md transition-colors ${
-            currentPage === i
-              ? "bg-gray-400 text-white"
-              : "text-gray-600 hover:text-gray-600 hover:bg-gray-50"
-          }`}
+          onClick={() => handlePageChange(i)}
+          aria-label={`Page ${i + 1}`}
+          aria-current={isActive ? "page" : undefined}
+          className={cn(
+            "px-3 py-2 text-sm rounded-md transition-colors",
+            isActive
+              ? cn("bg-gray-400 text-white", classNames?.activePageButton)
+              : cn(
+                  "text-gray-600 hover:text-gray-600 hover:bg-gray-50",
+                  classNames?.pageButton
+                )
+          )}
         >
           {i + 1}
         </button>
@@ -95,7 +130,11 @@ export function CustomPagination({
     if (endPage < totalPages - 1) {
       if (endPage < totalPages - 2) {
         buttons.push(
-          <span key="ellipsis2" className="px-2 py-2 text-gray-400">
+          <span
+            key="ellipsis2"
+            aria-hidden="true"
+            className="px-2 py-2 text-gray-400"
+          >
             ...
           </span>
         );
@@ -105,8 +144,12 @@ export function CustomPagination({
         <button
           key={totalPages}
           type="button"
-          onClick={() => onPageChange(totalPages - 1)}
-          className="px-3 py-2 text-sm text-gray-600 hover:text-gray-600 hover:bg-gray-50 rounded-md transition-colors"
+          onClick={() => handlePageChange(totalPages - 1)}
+          aria-label={`Page ${totalPages}`}
+          className={cn(
+            "px-3 py-2 text-sm text-gray-600 hover:text-gray-600 hover:bg-gray-50 rounded-md transition-colors",
+            classNames?.pageButton
+          )}
         >
           {totalPages}
         </button>
@@ -116,38 +159,51 @@ export function CustomPagination({
     return buttons;
   };
 
-  const formatNumber = (num: number) => {
-    return num ? num.toString().padStart(2, "0") : "00";
-  };
-
-  if (!paginationData) {
+  if (isLoading || !paginationData) {
     return (
       <div className="flex items-center justify-center p-6 bg-gray-50">
-        <span className="text-gray-500">Loading pagination...</span>
+        <span className="text-gray-500">
+          {isLoading ? "Loading..." : "No pagination data"}
+        </span>
       </div>
     );
   }
 
+  const effectiveSizeOptions = pageSizeOptions.includes(paginationData.perPage)
+    ? pageSizeOptions
+    : [...pageSizeOptions, paginationData.perPage].sort((a, b) => a - b);
+
   const startItem =
-    (paginationData.currentPage - 1) * paginationData.perPage + 1;
+    paginationData.totalCount === 0
+      ? 0
+      : (paginationData.currentPage - 1) * paginationData.perPage + 1;
   const endItem = Math.min(
     startItem + paginationData.perPage - 1,
     paginationData.totalCount
   );
 
   return (
-    <div className="flex items-center justify-between pb-4 bg-white">
-      <div className="flex-1">
+    <div
+      className={cn(
+        "flex items-center justify-between pb-4 bg-white",
+        className,
+        classNames?.root
+      )}
+    >
+      <div className={cn("flex-1", classNames?.info)}>
         <span className="text-sm text-gray-600">
-          Showing {formatNumber(startItem)} - {formatNumber(endItem)} of{" "}
+          Showing {padCount(startItem)} - {padCount(endItem)} of{" "}
           {paginationData.totalCount ?? 0} results
         </span>
       </div>
 
-      <div className="flex items-center space-x-1">
+      <nav
+        aria-label="Pagination"
+        className={cn("flex items-center space-x-1", classNames?.nav)}
+      >
         <button
           type="button"
-          onClick={() => onPageChange(currentPage - 1)}
+          onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 0}
           className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           aria-label="Previous page"
@@ -161,7 +217,7 @@ export function CustomPagination({
 
         <button
           type="button"
-          onClick={() => onPageChange(currentPage + 1)}
+          onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage >= paginationData.pageCount - 1}
           className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           aria-label="Next page"
@@ -170,17 +226,26 @@ export function CustomPagination({
             <path d="M5.3 13.7a1 1 0 0 1 0-1.4L9.6 8 5.3 3.7a1 1 0 0 1 1.4-1.4l5 5a1 1 0 0 1 0 1.4l-5 5a1 1 0 0 1-1.4 0z" />
           </svg>
         </button>
-      </div>
+      </nav>
 
       <div className="flex-1 flex justify-end">
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600">Item per page</span>
-          <select
-            value={paginationData.perPage || 10}
-            onChange={onPageSizeChange}
-            className="px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-white text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          <label
+            htmlFor="pagination-per-page"
+            className="text-sm text-gray-600"
           >
-            {pageSizeOptions.map((option) => (
+            Items per page
+          </label>
+          <select
+            id="pagination-per-page"
+            value={paginationData.perPage || 10}
+            onChange={handlePageSizeChange}
+            className={cn(
+              "px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-white text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors",
+              classNames?.select
+            )}
+          >
+            {effectiveSizeOptions.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>
