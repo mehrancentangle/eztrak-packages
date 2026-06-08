@@ -4,3 +4,8 @@ export type {
   EztrakTabsClassNames,
   EztrakTabsProps,
 } from "./tabs/types";
+export { CustomPagination } from "./pagination/CustomPagination";
+export type {
+  CustomPaginationProps,
+  PaginationData,
+} from "./pagination/types";
