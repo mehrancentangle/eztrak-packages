@@ -148,6 +148,17 @@ export const currencyFormatter = (value: number | null | undefined): string => {
     currency: "USD",
   }) ?? "";
 };
+export const formatNumber = (number: number | string | null | undefined): string => {
+  if (isNaN(Number(number)) || number === null || number === undefined) {
+    return "0";
+  }
+
+  const formattedNumber = Number(number)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  return formattedNumber;
+};
 
 export const parseCurrencyValueToNumber = (value: unknown): number => {
   if (value == null || value === "") return 0;

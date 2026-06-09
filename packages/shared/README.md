@@ -28,6 +28,16 @@ import { cn, formatDate, getApiError, isEmpty } from "@eztrak/shared/utils";
 
 `cn` combines [`clsx`](https://github.com/lukeed/clsx) with [`tailwind-merge`](https://github.com/dcastil/tailwind-merge).
 
+Format a number with thousands separators:
+
+```js
+import { formatNumber } from "@eztrak/shared/utils";
+
+formatNumber(1234567); // "1,234,567"
+formatNumber("1234567.5"); // "1,234,567.5"
+formatNumber(null); // "0"
+```
+
 RTK Query errors (toast or SweetAlert — no extra wiring):
 
 ```js
