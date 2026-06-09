@@ -6,6 +6,20 @@ export const truncateText = (text: string | null | undefined, maxLength = 20) =>
   return text.slice(0, maxLength - 3) + "...";
 };
 
+export const truncateFileName = (
+  fileName: string | null | undefined,
+  maxLength = 20
+): string => {
+  if (!fileName) return "";
+  if (fileName.length <= maxLength) {
+    return fileName;
+  }
+  const extension = fileName.slice(fileName.lastIndexOf("."));
+  const truncatedName =
+    fileName.slice(0, maxLength - extension.length - 3) + "...";
+  return truncatedName + extension;
+};
+
 export function getApiError(apiError: unknown): string {
   if (!apiError) return "An unknown error occurred";
 

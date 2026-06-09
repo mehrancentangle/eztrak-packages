@@ -38,6 +38,15 @@ formatNumber("1234567.5"); // "1,234,567.5"
 formatNumber(null); // "0"
 ```
 
+Truncate text or file names (keeps the file extension):
+
+```js
+import { truncateText, truncateFileName } from "@eztrak/shared/utils";
+
+truncateText("A very long description here", 10); // "A very ..."
+truncateFileName("annual-financial-report-2026.pdf", 20); // "annual-financ....pdf"
+```
+
 RTK Query errors (toast or SweetAlert — no extra wiring):
 
 ```js
