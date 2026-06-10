@@ -1,9 +1,13 @@
-export const truncateText = (text: string | null | undefined, maxLength = 20) => {
-  if (!text) return "";
-  if (text.length <= maxLength) {
-    return text;
+export const truncateText = (
+  text: string | number | null | undefined,
+  maxLength = 20
+): string => {
+  if (text === null || text === undefined) return "";
+  const value = String(text);
+  if (value.length <= maxLength) {
+    return value;
   }
-  return text.slice(0, maxLength - 3) + "...";
+  return value.slice(0, maxLength - 3) + "...";
 };
 
 export const truncateFileName = (
