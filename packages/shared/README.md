@@ -171,6 +171,31 @@ import {
 
 `ResetColumnsButton` shows a SweetAlert2 confirmation before calling `onReset`.
 
+### Components — ResetFiltersButton
+
+Clears all URL search params (`react-router-dom`) in one click. Self-contained — no app `Button` needed.
+
+```tsx
+import { ResetFiltersButton } from "@eztrak/shared/components";
+
+// Default look + reset icon
+<ResetFiltersButton />
+
+// Custom label and an extra callback after reset
+<ResetFiltersButton label="Clear" onReset={() => refetch()} />
+
+// Override styles (e.g. solid red) and hide the icon
+<ResetFiltersButton icon={null} className="bg-red-500 text-white border-0" />
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | `"Reset Filters"` | Button text |
+| `icon` | `ReactNode` | reset icon | Leading icon; pass `null` to hide |
+| `className` | `string` | — | Classes merged with the default styles |
+| `onReset` | `() => void` | — | Called after search params are cleared |
+| `disabled` | `boolean` | `false` | Disables the button |
+
 ### Components — EztrakTabs
 
 Import styles once in your app entry or layout:
@@ -312,7 +337,7 @@ Opens on [http://localhost:6006](http://localhost:6006) with stories for `Eztrak
 | `@eztrak/shared` | Main entry — re-exports utils, hooks, and components |
 | `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, date/format helpers, API error helpers, form field helpers |
 | `@eztrak/shared/hooks` | `usePaginationUrlSync`, `useGridHeight` |
-| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `ResetColumnsButton`, `TableLayoutToolbarControls`, and related types |
+| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `ResetColumnsButton`, `TableLayoutToolbarControls`, `ResetFiltersButton`, and related types |
 | `@eztrak/shared/components/tabs.css` | Default tab styles (CSS variables) |
 
 ### EztrakTabs props

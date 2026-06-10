@@ -17,3 +17,5 @@ export type {
   ResetColumnsButtonProps,
   TableLayoutToolbarControlsProps,
 } from "./pagination/types";
+export { ResetFiltersButton } from "./search-filters/ResetFiltersButton";
+export type { ResetFiltersButtonProps } from "./search-filters/types";
