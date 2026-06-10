@@ -11,5 +11,15 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
-  external: ["react", "react-dom", "react-router-dom", "react-hot-toast", "sweetalert2"],
+  external: [
+    "framer-motion",
+    "react",
+    "react-dom",
+    "react-hot-toast",
+    "react-icons",
+    "react-icons/fa",
+    "react-icons/io5",
+    "react-router-dom",
+    "sweetalert2",
+  ],
 });
