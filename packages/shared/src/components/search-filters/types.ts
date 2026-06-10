@@ -12,6 +12,8 @@ export type ResetFiltersButtonVariant =
 export interface ResetFiltersButtonProps {
   /** Button label text. Defaults to "Reset Filters". */
   label?: string;
+  /** Show the text label. Defaults to true. Set false for an icon-only button. */
+  showLabel?: boolean;
   /** Leading icon. Defaults to a reset icon; pass `null` to hide it. */
   icon?: ReactNode;
   /** Visual style variant. Defaults to "primary-outline". */

@@ -53,6 +53,7 @@ function ResetIcon({
 
 export function ResetFiltersButton({
   label = "Reset Filters",
+  showLabel = true,
   icon,
   variant = "primary-outline",
   className,
@@ -76,7 +77,7 @@ export function ResetFiltersButton({
       className={cn(BASE_STYLES, VARIANTS[variant], className)}
     >
       {resolvedIcon}
-      {label}
+      {showLabel && label}
     </button>
   );
 }
