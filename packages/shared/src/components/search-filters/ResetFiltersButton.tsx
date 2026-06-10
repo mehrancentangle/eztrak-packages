@@ -1,6 +1,27 @@
 import { useSearchParams } from "react-router-dom";
 import { cn } from "../../utils/cn";
-import type { ResetFiltersButtonProps } from "./types";
+import type {
+  ResetFiltersButtonProps,
+  ResetFiltersButtonVariant,
+} from "./types";
+
+const BASE_STYLES =
+  "inline-flex items-center gap-1.5 px-5 py-3 rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50";
+
+const VARIANTS: Record<ResetFiltersButtonVariant, string> = {
+  primary:
+    "bg-white text-secondary border border-secondary hover:bg-lightGray hover:text-black",
+  "primary-outline":
+    "bg-white text-primary-150 border border-primary-150 font-bold hover:bg-primary-100 hover:text-white",
+  "primary-fill":
+    "bg-primary-150 text-white border border-primary-150 hover:bg-primary/90",
+  secondary:
+    "bg-primary-150 text-white border border-primary-150 hover:bg-primary/90",
+  danger: "bg-red-600 text-white border border-red-600 hover:bg-red-700",
+  outline: "bg-white text-primary border border-primary hover:bg-primary/10",
+  ghost:
+    "bg-transparent text-secondary border border-transparent hover:bg-primary/10",
+};
 
 function ResetIcon({
   size = 16,
@@ -33,6 +54,7 @@ function ResetIcon({
 export function ResetFiltersButton({
   label = "Reset Filters",
   icon,
+  variant = "primary-outline",
   className,
   onReset,
   disabled = false,
@@ -51,10 +73,7 @@ export function ResetFiltersButton({
       type="button"
       onClick={handleReset}
       disabled={disabled}
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-xl border border-primary-150 bg-white px-3 py-1.5 text-sm font-medium text-primary-150 hover:bg-gray-50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white",
-        className
-      )}
+      className={cn(BASE_STYLES, VARIANTS[variant], className)}
     >
       {resolvedIcon}
       {label}
