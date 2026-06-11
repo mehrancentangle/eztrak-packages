@@ -15,4 +15,6 @@ export interface ModalProps {
   closeOnBackdropClick?: boolean;
   closeOnEscape?: boolean;
   zIndex?: number;
+  isLoading?: boolean;
+  customLoader?: ReactNode;
 }
