@@ -8,13 +8,38 @@ Shared utilities, hooks, and UI components for Eztrak applications.
 npm install @eztrak/shared
 ```
 
-Peer dependencies (hooks + `handleApiError` + components):
+Peer dependencies:
 
 ```bash
-npm install react react-dom react-router-dom react-hot-toast react-icons sweetalert2
+npm install react react-dom react-router-dom react-hot-toast sweetalert2 react-icons framer-motion
 ```
 
-Your app must render `<Toaster />` from react-hot-toast (e.g. in your root layout).
+Your app must render `<Toaster />` from `react-hot-toast` (e.g. in your root layout).
+
+Import loader styles once if you use the `Loader` component:
+
+```ts
+import "@eztrak/shared/components/loader.css";
+```
+
+`CustomCellEditor` does **not** require `loader.css` — it uses an inline SVG spinner for the save button.
+
+## Development
+
+From the monorepo root:
+
+```bash
+npm run build:shared
+npm run storybook
+```
+
+From `packages/shared`:
+
+```bash
+npm run build
+npm run storybook
+npm run build:storybook
+```
 
 ## Usage
 
@@ -171,6 +196,77 @@ import {
 
 `ResetColumnsButton` shows a SweetAlert2 confirmation before calling `onReset`.
 
+### Components — CustomCellEditor
+
+AG Grid cell editor with inline save/cancel buttons, keyboard shortcuts (Enter to save, Escape to cancel), and toast feedback. Implements the AG Grid `ICellEditor` ref API (`getValue`, `isCancelBeforeStart`, `isCancelAfterEnd`).
+
+Your app owns the API call via `onSave` — the package does not use RTK Query or app-specific endpoints.
+
+For narrow columns, set `cellEditorPopup: true` on the column definition so the editor (and save/cancel buttons) is not clipped.
+
+```tsx
+import { CustomCellEditor } from "@eztrak/shared/components";
+import { ELITE_API } from "../constants/apiConstants";
+import { createCellEditorOnSave } from "../utils/cellEditorOnSave";
+
+// In column defs:
+{
+  field: "name",
+  editable: true,
+  cellEditor: CustomCellEditor,
+  cellEditorPopup: true,
+  cellEditorSelector: (params) => ({
+    component: CustomCellEditor,
+    params: {
+      value: params.value,
+      name: "name",
+      entityId: params.data.id,
+      entityName: "Package",
+      inputType: "text",
+      onSave: createCellEditorOnSave([ELITE_API.PACKAGE]),
+      dropdownOptions: [], // when inputType is "dropdown"
+    },
+  }),
+}
+```
+
+Example `createCellEditorOnSave` helper (elite-pilot pattern):
+
+```js
+import { ELITE_API } from "../constants/apiConstants";
+import { store } from "../redux/store";
+import { generalApi } from "../redux/api/generalApi";
+
+export function createCellEditorOnSave(invalidate = []) {
+  return async (payload) => {
+    const result = await store.dispatch(
+      generalApi.endpoints.updateRecord.initiate({
+        endpoint: ELITE_API.SAVE_CELL_EDIT,
+        data: payload,
+        invalidate: invalidate.map((endpoint) => ({
+          type: "General",
+          id: endpoint,
+        })),
+      })
+    );
+    if (result.error) {
+      throw new Error(result.error?.data?.message || "Failed to update record");
+    }
+  };
+}
+```
+
+#### Input types
+
+| `inputType` | Behavior |
+| --- | --- |
+| `text` | Standard text input |
+| `number` | Numeric input (filters non-numeric characters); `propertyValue` is sent as a `number` |
+| `date` | Date picker (`YYYY-MM-DD` via `toDateInputValue`) |
+| `dropdown` | Select from `dropdownOptions` |
+
+Save is disabled when the value is unchanged (compares as strings so `42` and `"42"` are treated as equal). Pressing Enter while a save is in progress does not submit twice.
+
 ### Components — ResetFiltersButton
 
 Clears all URL search params (`react-router-dom`) in one click. Self-contained — no app `Button` needed.
@@ -263,6 +359,36 @@ import { HiOutlineSearch } from "react-icons/hi";
 | `searchIconClassName` | `string` | — | Classes for the default search icon |
 
 Also accepts standard `<input>` HTML attributes (except `name`, `type`, `value`, `onChange`, and `defaultValue`, which are managed internally).
+
+### Components — Loader
+
+Spinner for full-page or inline loading states. Requires `loader.css`:
+
+```tsx
+import { Loader } from "@eztrak/shared/components";
+import "@eztrak/shared/components/loader.css";
+
+<Loader size="36px" color="#F54C00" />
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `string` | `"50px"` | Spinner diameter |
+| `color` | `string` | `"#F54C00"` | Spinner accent color |
+| `speed` | `string` | `"1s"` | Animation duration |
+| `className` | `string` | — | Extra class on the spinner element |
+
+### Components — Modal
+
+Animated modal dialog (uses `framer-motion`).
+
+```tsx
+import { Modal } from "@eztrak/shared/components";
+
+<Modal isOpen={open} onClose={() => setOpen(false)} title="Confirm">
+  <p>Modal content</p>
+</Modal>
+```
 
 ### Components — EztrakTabs
 
@@ -384,6 +510,9 @@ import {
   EztrakTabs,
   CustomPagination,
   SearchInput,
+  CustomCellEditor,
+  Loader,
+  Modal,
 } from "@eztrak/shared";
 ```
 
@@ -392,12 +521,14 @@ import {
 Run the component playground locally (dev-only, not published to npm):
 
 ```bash
+# From monorepo root
 npm run storybook
-# or from the monorepo root:
-npm run storybook -w @eztrak/shared
+
+# From packages/shared
+npm run storybook
 ```
 
-Opens on [http://localhost:6006](http://localhost:6006) with stories for `EztrakTabs`, `CustomPagination`, `ResetFiltersButton`, and `Loader`.
+Opens on [http://localhost:6006](http://localhost:6006) with stories for `EztrakTabs`, `CustomPagination`, `ResetColumnsButton`, `CustomCellEditor`, and `Loader`.
 
 ## Exports
 
@@ -406,8 +537,9 @@ Opens on [http://localhost:6006](http://localhost:6006) with stories for `Eztrak
 | `@eztrak/shared` | Main entry — re-exports utils, hooks, and components |
 | `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, date/format helpers, API error helpers, form field helpers |
 | `@eztrak/shared/hooks` | `usePaginationUrlSync`, `useGridHeight` |
-| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `SearchInput`, `ResetFiltersButton`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
+| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `CustomCellEditor`, `SearchInput`, `ResetFiltersButton`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
 | `@eztrak/shared/components/tabs.css` | Default tab styles (CSS variables) |
+| `@eztrak/shared/components/loader.css` | Loader spinner styles |
 
 ### EztrakTabs props
 
@@ -444,13 +576,30 @@ Keyboard: Arrow keys move between tabs; Home/End jump to first/last enabled tab.
 
 `CustomPagination` writes `page` and `perPage` to the URL via `react-router-dom`. Your page should read those params, fetch data, and pass the result back as `paginationData`.
 
+### CustomCellEditor props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string \| number \| null` | required | Initial cell value (AG Grid passes via `cellEditorParams`) |
+| `name` | `string` | required | Property name sent in save payload as `propertyName` |
+| `stopEditing` | `() => void` | required | AG Grid callback to close the editor |
+| `entityId` | `string \| number` | required | Entity id sent in save payload |
+| `entityName` | `string` | `"Record"` | Entity type name sent in save payload |
+| `inputType` | `CellEditorInputType` | `"text"` | `text`, `number`, `date`, or `dropdown` |
+| `onSave` | `(payload: CellEditPayload) => Promise<void>` | required | Async save handler; throw on failure to show error toast |
+| `dropdownOptions` | `DropdownOption[]` | `[]` | Options when `inputType` is `dropdown` |
+
+`CellEditPayload` shape: `{ propertyName, propertyValue, entityId, entityName }`. For `inputType: "number"`, `propertyValue` is a `number` (via `parseFloat`).
+
 ## Requirements
 
 - Node.js 18+
 - React 18+ (for hooks and components)
-- `react-router-dom` (required for `CustomPagination`, `SearchInput`, `ResetFiltersButton`, and `usePaginationUrlSync`)
-- `react-icons` (required for `SearchInput` and `Modal`)
-- `sweetalert2` (required for `ResetColumnsButton` and `confirmationAlert`)
+- `react-router-dom` — `CustomPagination`, `SearchInput`, `ResetFiltersButton`, and `usePaginationUrlSync` (optional peer; install if you use these)
+- `react-hot-toast` — toast feedback in `CustomCellEditor` and `handleApiError`
+- `sweetalert2` — `ResetColumnsButton` and `confirmationAlert`
+- `react-icons` — `CustomCellEditor`, `SearchInput`, and `Modal`
+- `framer-motion` — `Modal`
 - Works with any bundler that supports the [Node.js `exports` field](https://nodejs.org/api/packages.html#exports)
 
 ## License

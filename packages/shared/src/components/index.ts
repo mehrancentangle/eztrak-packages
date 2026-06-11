@@ -28,3 +28,11 @@ export { Modal } from "./modal/Modal";
 export type { ModalProps } from "./modal/types";
 export { Loader } from "./Loader";
 export type { LoaderProps } from "./Loader/Loader.types";
+export { CustomCellEditor } from "./cell-editor/CustomCellEditor";
+export type {
+  CellEditPayload,
+  CellEditorInputType,
+  CustomCellEditorProps,
+  CustomCellEditorRef,
+  DropdownOption,
+} from "./cell-editor/types";
