@@ -11,7 +11,7 @@ npm install @eztrak/shared
 Peer dependencies (hooks + `handleApiError` + components):
 
 ```bash
-npm install react react-dom react-router-dom react-hot-toast sweetalert2
+npm install react react-dom react-router-dom react-hot-toast react-icons sweetalert2
 ```
 
 Your app must render `<Toaster />` from react-hot-toast (e.g. in your root layout).
@@ -196,6 +196,74 @@ import { ResetFiltersButton } from "@eztrak/shared/components";
 | `onReset` | `() => void` | — | Called after search params are cleared |
 | `disabled` | `boolean` | `false` | Disables the button |
 
+### Components — SearchInput
+
+URL-synced search field with optional debounced live search. Requires a React Router context (`useSearchParams`).
+
+```tsx
+import { SearchInput } from "@eztrak/shared/components";
+
+// Submit on Enter or search icon click (updates ?query= in the URL)
+<SearchInput placeholder="Search items..." />
+```
+
+#### Live search (debounced)
+
+```tsx
+<SearchInput
+  placeholder="Search..."
+  liveSearch
+  debounceDelay={500}
+/>
+```
+
+#### Custom URL param name
+
+```tsx
+<SearchInput defaultParam="search" placeholder="Find a user..." />
+```
+
+#### Custom styling and icon
+
+```tsx
+<SearchInput
+  searchWrapperClass="border border-gray-200 shadow-sm"
+  searchClassName="w-full"
+  searchIconClassName="text-blue-500"
+  showIcon
+/>
+```
+
+#### Hide icon / custom icon
+
+```tsx
+import { HiOutlineSearch } from "react-icons/hi";
+
+<SearchInput showIcon={false} />
+
+<SearchInput customIcon={<HiOutlineSearch className="h-5 w-5" />} />
+```
+
+`SearchInput` reads and writes a single query param (default `query`). Clearing the input removes that param from the URL. The input stays in sync when the URL changes externally (e.g. browser back/forward or `ResetFiltersButton`).
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `placeholder` | `string` | `"Search..."` | Input placeholder |
+| `defaultParam` | `string` | `"query"` | URL search param key |
+| `defaultValue` | `string` | — | Initial value when the param is absent |
+| `liveSearch` | `boolean` | `false` | Update URL on input change (debounced) |
+| `debounceDelay` | `number` | `500` | Debounce delay in ms when `liveSearch` is true |
+| `showIcon` | `boolean` | `true` | Show the submit/search icon button |
+| `customIcon` | `ReactNode \| null` | `null` | Replace the default search icon |
+| `name` | `string` | `"search"` | Form input `name` (used on submit) |
+| `type` | `string` | `"search"` | Input `type` attribute |
+| `searchWrapperClass` | `string` | — | Classes for the form wrapper |
+| `searchClassName` | `string` | — | Classes for the input |
+| `searchBtn` | `string` | — | Classes for the icon button |
+| `searchIconClassName` | `string` | — | Classes for the default search icon |
+
+Also accepts standard `<input>` HTML attributes (except `name`, `type`, `value`, `onChange`, and `defaultValue`, which are managed internally).
+
 ### Components — EztrakTabs
 
 Import styles once in your app entry or layout:
@@ -315,6 +383,7 @@ import {
   useGridHeight,
   EztrakTabs,
   CustomPagination,
+  SearchInput,
 } from "@eztrak/shared";
 ```
 
@@ -328,7 +397,7 @@ npm run storybook
 npm run storybook -w @eztrak/shared
 ```
 
-Opens on [http://localhost:6006](http://localhost:6006) with stories for `EztrakTabs`, `CustomPagination`, and `ResetColumnsButton`.
+Opens on [http://localhost:6006](http://localhost:6006) with stories for `EztrakTabs`, `CustomPagination`, `ResetFiltersButton`, and `Loader`.
 
 ## Exports
 
@@ -337,7 +406,7 @@ Opens on [http://localhost:6006](http://localhost:6006) with stories for `Eztrak
 | `@eztrak/shared` | Main entry — re-exports utils, hooks, and components |
 | `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, date/format helpers, API error helpers, form field helpers |
 | `@eztrak/shared/hooks` | `usePaginationUrlSync`, `useGridHeight` |
-| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `ResetColumnsButton`, `TableLayoutToolbarControls`, `ResetFiltersButton`, and related types |
+| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `SearchInput`, `ResetFiltersButton`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
 | `@eztrak/shared/components/tabs.css` | Default tab styles (CSS variables) |
 
 ### EztrakTabs props
@@ -379,7 +448,8 @@ Keyboard: Arrow keys move between tabs; Home/End jump to first/last enabled tab.
 
 - Node.js 18+
 - React 18+ (for hooks and components)
-- `react-router-dom` (required for `CustomPagination` and `usePaginationUrlSync`)
+- `react-router-dom` (required for `CustomPagination`, `SearchInput`, `ResetFiltersButton`, and `usePaginationUrlSync`)
+- `react-icons` (required for `SearchInput` and `Modal`)
 - `sweetalert2` (required for `ResetColumnsButton` and `confirmationAlert`)
 - Works with any bundler that supports the [Node.js `exports` field](https://nodejs.org/api/packages.html#exports)
 
