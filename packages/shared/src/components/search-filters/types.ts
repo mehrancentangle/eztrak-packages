@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { InputHTMLAttributes, ReactNode } from "react";
 
 export type ResetFiltersButtonVariant =
   | "primary"
@@ -23,4 +23,24 @@ export interface ResetFiltersButtonProps {
   /** Called after the search params are cleared. */
   onReset?: () => void;
   disabled?: boolean;
+}
+
+export interface SearchInputProps
+  extends Omit<
+    InputHTMLAttributes<HTMLInputElement>,
+    "name" | "type" | "value" | "onChange" | "defaultValue"
+  > {
+  placeholder?: string;
+  searchBtn?: string;
+  searchClassName?: string;
+  searchWrapperClass?: string;
+  searchIconClassName?: string;
+  defaultParam?: string;
+  showIcon?: boolean;
+  name?: string;
+  type?: string;
+  liveSearch?: boolean;
+  debounceDelay?: number;
+  customIcon?: ReactNode | null;
+  defaultValue?: string;
 }

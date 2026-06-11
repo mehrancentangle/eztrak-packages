@@ -18,6 +18,7 @@ export default defineConfig({
     "react-hot-toast",
     "react-icons",
     "react-icons/fa",
+    "react-icons/fi",
     "react-icons/io5",
     "react-router-dom",
     "sweetalert2",

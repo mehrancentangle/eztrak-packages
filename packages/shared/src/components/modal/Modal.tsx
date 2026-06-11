@@ -24,6 +24,7 @@ export function Modal({
   zIndex = 1000,
   isLoading = false,
   customLoader = null,
+  footerClassName,
 }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -134,23 +135,14 @@ export function Modal({
 
             {/* Modal Footer */}
             {footer && (
+
               <div
+              className={cn("sticky bottom-0 flex justify-end p-4 space-x-4 border-t bg-white ",footerClassName)}
+
                 style={{
                   zIndex: 1000,
-                  position: "sticky",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "white",
-                  fontSize: "24px",
-                  fontWeight: "semibold",
-                  padding: "8px 16px",
-                  borderRadius: "16px",
-                  boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-                  margin: "0 16px",
-                  justifyContent: "space-between",
+             
+                  borderRadius: "24px",
                 }}
               >
                 {footer}

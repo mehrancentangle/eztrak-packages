@@ -17,4 +17,5 @@ export interface ModalProps {
   zIndex?: number;
   isLoading?: boolean;
   customLoader?: ReactNode | null;
+  footerClassName?: string;
 }
