@@ -11,10 +11,16 @@ npm install @eztrak/shared
 Peer dependencies (hooks + `handleApiError` + components):
 
 ```bash
-npm install react react-dom react-router-dom react-hot-toast sweetalert2
+npm install react react-dom react-router-dom react-hot-toast sweetalert2 react-icons framer-motion
 ```
 
 Your app must render `<Toaster />` from react-hot-toast (e.g. in your root layout).
+
+For `CustomCellEditor` and `Loader`, import loader styles once in your app entry:
+
+```ts
+import "@eztrak/shared/components/loader.css";
+```
 
 ## Usage
 
@@ -171,6 +177,73 @@ import {
 
 `ResetColumnsButton` shows a SweetAlert2 confirmation before calling `onReset`.
 
+### Components — CustomCellEditor
+
+AG Grid cell editor with inline save/cancel, keyboard shortcuts (Enter / Escape), and toast feedback. Implements the AG Grid `ICellEditor` ref API (`getValue`, `isCancelBeforeStart`, `isCancelAfterEnd`).
+
+Your app owns the API call via `onSave` — the package does not use RTK Query or app-specific endpoints.
+
+```tsx
+import { CustomCellEditor } from "@eztrak/shared/components";
+import "@eztrak/shared/components/loader.css";
+import { ELITE_API } from "../constants/apiConstants";
+import { createCellEditorOnSave } from "../utils/cellEditorOnSave";
+
+// In column defs:
+{
+  field: "name",
+  editable: true,
+  cellEditor: CustomCellEditor,
+  cellEditorSelector: (params) => ({
+    component: CustomCellEditor,
+    params: {
+      value: params.value,
+      name: "name",
+      entityId: params.data.id,
+      entityName: "Package",
+      inputType: "text",
+      onSave: createCellEditorOnSave([ELITE_API.PACKAGE]),
+      dropdownOptions: [], // when inputType is "dropdown"
+    },
+  }),
+}
+```
+
+Example `createCellEditorOnSave` helper (elite-pilot pattern):
+
+```js
+import { ELITE_API } from "../constants/apiConstants";
+import { store } from "../redux/store";
+import { generalApi } from "../redux/api/generalApi";
+
+export function createCellEditorOnSave(invalidate = []) {
+  return async (payload) => {
+    const result = await store.dispatch(
+      generalApi.endpoints.updateRecord.initiate({
+        endpoint: ELITE_API.SAVE_CELL_EDIT,
+        data: payload,
+        invalidate: invalidate.map((endpoint) => ({
+          type: "General",
+          id: endpoint,
+        })),
+      })
+    );
+    if (result.error) {
+      throw new Error(result.error?.data?.message || "Failed to update record");
+    }
+  };
+}
+```
+
+#### Input types
+
+| `inputType` | Behavior |
+| --- | --- |
+| `text` | Standard text input |
+| `number` | Numeric input (filters non-numeric characters) |
+| `date` | Date picker (`YYYY-MM-DD` via `toDateInputValue`) |
+| `dropdown` | Select from `dropdownOptions` |
+
 ### Components — ResetFiltersButton
 
 Clears all URL search params (`react-router-dom`) in one click. Self-contained — no app `Button` needed.
@@ -315,6 +388,7 @@ import {
   useGridHeight,
   EztrakTabs,
   CustomPagination,
+  CustomCellEditor,
 } from "@eztrak/shared";
 ```
 
@@ -328,7 +402,7 @@ npm run storybook
 npm run storybook -w @eztrak/shared
 ```
 
-Opens on [http://localhost:6006](http://localhost:6006) with stories for `EztrakTabs`, `CustomPagination`, and `ResetColumnsButton`.
+Opens on [http://localhost:6006](http://localhost:6006) with stories for `EztrakTabs`, `CustomPagination`, `ResetColumnsButton`, `CustomCellEditor`, and `Loader`.
 
 ## Exports
 
@@ -337,8 +411,9 @@ Opens on [http://localhost:6006](http://localhost:6006) with stories for `Eztrak
 | `@eztrak/shared` | Main entry — re-exports utils, hooks, and components |
 | `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, date/format helpers, API error helpers, form field helpers |
 | `@eztrak/shared/hooks` | `usePaginationUrlSync`, `useGridHeight` |
-| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `ResetColumnsButton`, `TableLayoutToolbarControls`, `ResetFiltersButton`, and related types |
+| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `CustomCellEditor`, `Loader`, `Modal`, `ResetColumnsButton`, `TableLayoutToolbarControls`, `ResetFiltersButton`, and related types |
 | `@eztrak/shared/components/tabs.css` | Default tab styles (CSS variables) |
+| `@eztrak/shared/components/loader.css` | Loader spinner styles |
 
 ### EztrakTabs props
 
@@ -375,12 +450,29 @@ Keyboard: Arrow keys move between tabs; Home/End jump to first/last enabled tab.
 
 `CustomPagination` writes `page` and `perPage` to the URL via `react-router-dom`. Your page should read those params, fetch data, and pass the result back as `paginationData`.
 
+### CustomCellEditor props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string \| number \| null` | required | Initial cell value (AG Grid passes via `cellEditorParams`) |
+| `name` | `string` | required | Property name sent in save payload as `propertyName` |
+| `stopEditing` | `() => void` | required | AG Grid callback to close the editor |
+| `entityId` | `string \| number` | required | Entity id sent in save payload |
+| `entityName` | `string` | `"Record"` | Entity type name sent in save payload |
+| `inputType` | `CellEditorInputType` | `"text"` | `text`, `number`, `date`, or `dropdown` |
+| `onSave` | `(payload: CellEditPayload) => Promise<void>` | required | Async save handler; throw on failure to show error toast |
+| `dropdownOptions` | `DropdownOption[]` | `[]` | Options when `inputType` is `dropdown` |
+
+`CellEditPayload` shape: `{ propertyName, propertyValue, entityId, entityName }`.
+
 ## Requirements
 
 - Node.js 18+
 - React 18+ (for hooks and components)
 - `react-router-dom` (required for `CustomPagination` and `usePaginationUrlSync`)
-- `sweetalert2` (required for `ResetColumnsButton` and `confirmationAlert`)
+- `sweetalert2` (required for `ResetColumnsButton`, `ResetFiltersButton` confirmations, and `confirmationAlert`)
+- `react-icons` (required for `CustomCellEditor` save/cancel icons)
+- `framer-motion` (required for `Modal`)
 - Works with any bundler that supports the [Node.js `exports` field](https://nodejs.org/api/packages.html#exports)
 
 ## License

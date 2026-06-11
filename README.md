@@ -6,7 +6,7 @@ Monorepo for shared npm packages used across Eztrak applications.
 
 | Package | Description |
 | --- | --- |
-| [`@eztrak/shared`](./packages/shared) | Shared utilities, hooks, and components (`EztrakTabs`, `CustomPagination`, and more) |
+| [`@eztrak/shared`](./packages/shared) | Shared utilities, hooks, and components (`EztrakTabs`, `CustomPagination`, `CustomCellEditor`, and more) |
 
 Companion design primitives (`Button`, `Card`, `Loader`, etc.) are available separately via [`eztrak-ui`](https://www.npmjs.com/package/eztrak-ui).
 
