@@ -21,3 +21,5 @@ export { ResetFiltersButton } from "./search-filters/ResetFiltersButton";
 export type { ResetFiltersButtonProps } from "./search-filters/types";
 export { Modal } from "./modal/Modal";
 export type { ModalProps } from "./modal/types";
+export { Loader } from "./Loader";
+export type { LoaderProps } from "./Loader/Loader.types";

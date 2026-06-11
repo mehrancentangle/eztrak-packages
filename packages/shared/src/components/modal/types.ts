@@ -16,5 +16,5 @@ export interface ModalProps {
   closeOnEscape?: boolean;
   zIndex?: number;
   isLoading?: boolean;
-  customLoader?: ReactNode;
+  customLoader?: ReactNode | null;
 }

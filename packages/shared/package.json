@@ -1,6 +1,6 @@
 {
   "name": "@eztrak/shared",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "homepage": "https://github.com/mehrancentangle/eztrak-packages",
   "description": "Shared hooks, utils, and UI for Eztrak federation apps",
   "main": "./dist/index.js",
@@ -33,10 +33,11 @@
       "import": "./dist/components/index.mjs",
       "require": "./dist/components/index.js"
     },
-    "./components/tabs.css": "./dist/components/tabs/styles.css"
+    "./components/tabs.css": "./dist/components/tabs/styles.css",
+    "./components/loader.css": "./dist/components/Loader/Loader.css"
   },
   "scripts": {
-    "build": "tsup && node -e \"const fs=require('fs');const p='dist/components/tabs';fs.mkdirSync(p,{recursive:true});fs.copyFileSync('src/components/tabs/styles.css',p+'/styles.css')\"",
+    "build": "tsup && node -e \"const fs=require('fs');const tabs='dist/components/tabs';fs.mkdirSync(tabs,{recursive:true});fs.copyFileSync('src/components/tabs/styles.css',tabs+'/styles.css');const loader='dist/components/Loader';fs.mkdirSync(loader,{recursive:true});fs.copyFileSync('src/components/Loader/Loader.css',loader+'/Loader.css')\"",
     "prepublishOnly": "npm run build",
     "storybook": "storybook dev -p 6006",
     "build:storybook": "storybook build"

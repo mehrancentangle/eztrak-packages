@@ -1,6 +1,7 @@
 import type { Preview } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 import "../src/components/tabs/styles.css";
+import "../src/components/Loader/Loader.css";
 import "../src/storybook-globals.css";
 
 const preview: Preview = {

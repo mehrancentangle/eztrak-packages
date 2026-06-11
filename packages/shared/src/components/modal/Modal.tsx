@@ -4,8 +4,9 @@ import { createPortal } from "react-dom";
 import { FaFileExport, FaPrint } from "react-icons/fa";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { cn } from "../../utils/cn";
+import { Loader } from "../Loader";
 import type { ModalProps } from "./types";
-import { BiLoader } from "react-icons/bi";
+
 
 export function Modal({
   isOpen,
@@ -23,7 +24,7 @@ export function Modal({
   closeOnEscape = true,
   zIndex = 1000,
   isLoading = false,
-  customLoader = <BiLoader className="animate-spin" size={48} />
+  customLoader = null
 
 }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
@@ -90,7 +91,27 @@ export function Modal({
           }}
         >
           {/* Modal Header */}
-          <div className="sticky top-0 z-10 flex justify-between items-center bg-white text-2xl p-8 pb-4 rounded-t-3xl">
+          <div
+          style={{
+            zIndex: 1000,
+            position: 'sticky',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'white',
+            fontSize: '24px',
+            fontWeight: 'semibold',
+            padding: '8px 16px',
+            borderRadius: '16px',
+            boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)',
+            margin: '0 16px',
+            justifyContent: 'space-between',
+          }}
+          // className="sticky top-0 z-10 flex justify-between items-center bg-white text-2xl p-8 pb-4 rounded-t-3xl"
+          >
             <h2 className="font-semibold">{title}</h2>
             <div className="flex items-center space-x-4">
               {onPrint && (
@@ -121,7 +142,7 @@ export function Modal({
           </div>
           <div
             className={cn(
-              "overflow-y-auto px-8 pb-8 flex-grow scroll scrollbar-hidden",
+              "overflow-y-auto px-8 pb-8 grow scroll scrollbar-hidden",
               modalBodyWrapperClass
             )}
           >
@@ -130,7 +151,26 @@ export function Modal({
 
           {/* Modal Footer */}
           {footer && (
-            <div className="sticky bottom-0 flex justify-end p-4 space-x-4 border-t bg-white rounded-b-3xl">
+            <div 
+            style={{
+              zIndex: 1000,
+              position: 'sticky',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'white',
+              fontSize: '24px',
+              fontWeight: 'semibold',
+              padding: '8px 16px',
+              borderRadius: '16px',
+              boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)',
+              margin: '0 16px',
+              justifyContent: 'space-between',
+            }}
+
+            >
               {footer}
             </div>
           )}
@@ -144,7 +184,7 @@ export function Modal({
             role="status"
             onClick={(e) => e.stopPropagation()}
           >
-            {customLoader}
+            {customLoader ? customLoader : <Loader size="48px" />}
           </div>
         )}
       </div>
