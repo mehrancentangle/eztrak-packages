@@ -92,7 +92,7 @@ export function SearchInput({
     <form
       onSubmit={handleSearch}
       className={cn(
-        "flex items-center justify-between bg-white rounded-md px-2 h-11",
+        "flex items-center justify-between bg-white rounded-xl px-2 h-11 border",
         searchWrapperClass
       )}
     >
