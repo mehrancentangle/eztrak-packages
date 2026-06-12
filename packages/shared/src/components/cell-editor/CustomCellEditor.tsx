@@ -20,6 +20,7 @@ import toast from "react-hot-toast";
 
 import { FaCheck, FaTimes } from "react-icons/fa";
 
+import { cn } from "../../utils/cn";
 import { toDateInputValue } from "../../utils/helpers";
 
 import type { CellEditPayload, CustomCellEditorProps, CustomCellEditorRef } from "./types";
@@ -135,6 +136,8 @@ export const CustomCellEditor = forwardRef<
       onSave,
 
       dropdownOptions = [],
+
+      className,
 
     },
 
@@ -366,7 +369,12 @@ export const CustomCellEditor = forwardRef<
 
     return (
 
-      <div className="flex items-center w-full h-full min-h-0 overflow-hidden gap-0.5 min-w-[80px]">
+      <div
+        className={cn(
+          "flex items-center w-full h-full min-h-0 overflow-hidden gap-0.5 min-w-[80px]",
+          className
+        )}
+      >
 
         {inputType === "dropdown" ? (
 

@@ -22,9 +22,10 @@ export interface CustomCellEditorProps {
   value: string | number | null | undefined;
   name: string;
   inputType?: CellEditorInputType;
-  stopEditing: () => void;
+  stopEditing: (cancel?: boolean) => void;
   entityId: string | number;
   entityName?: string;
   onSave: (payload: CellEditPayload) => Promise<void>;
   dropdownOptions?: DropdownOption[];
+  className?: string;
 }
