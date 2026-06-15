@@ -11,7 +11,7 @@ npm install @eztrak/shared
 Peer dependencies:
 
 ```bash
-npm install react react-dom react-router-dom react-hot-toast sweetalert2 react-icons framer-motion
+npm install react react-dom react-router-dom react-hot-toast sweetalert2 react-icons framer-motion react-tooltip
 ```
 
 Your app must render `<Toaster />` from `react-hot-toast` (e.g. in your root layout).
@@ -360,6 +360,47 @@ import { HiOutlineSearch } from "react-icons/hi";
 
 Also accepts standard `<input>` HTML attributes (except `name`, `type`, `value`, `onChange`, and `defaultValue`, which are managed internally).
 
+### Components — TooltipText
+
+Displays truncated text with the full value available on hover or keyboard focus. Uses `react-tooltip` for placement and delay behavior.
+
+```tsx
+import { TooltipText } from "@eztrak/shared/components";
+
+<TooltipText text="A very long material description" maxLength={20} />
+
+<TooltipText
+  text={row.description}
+  placement="bottom"
+  delayShow={300}
+  tooltipWhenTruncatedOnly
+/>
+```
+
+For lower-level composition, use `ToolTip` directly:
+
+```tsx
+import { ToolTip } from "@eztrak/shared/components";
+
+<ToolTip text="Full details" placement="right">
+  <button type="button">Info</button>
+</ToolTip>
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `text` | `string \| number \| null` | `""` | Full value shown inside the tooltip |
+| `maxLength` | `number` | `20` | Visible truncated text length |
+| `fallback` | `string` | `"-"` | Displayed when `text` is empty |
+| `placement` | `PlacesType` | `"top"` | Tooltip placement from `react-tooltip` |
+| `delayShow` / `delayHide` | `number` | — | Tooltip delay in milliseconds |
+| `className` | `string` | — | Classes for the tooltip trigger wrapper |
+| `textClassName` | `string` | — | Classes for the visible text |
+| `tooltipClassName` | `string` | — | Classes for the tooltip popup |
+| `tooltipStyle` | `CSSProperties` | — | Inline style overrides for the tooltip popup |
+| `showTooltip` | `boolean` | `true` | Disable tooltip while still rendering truncated text |
+| `tooltipWhenTruncatedOnly` | `boolean` | `false` | Only show tooltip when truncation occurs |
+
 ### Components — Loader
 
 Spinner for full-page or inline loading states. Requires `loader.css`:
@@ -537,7 +578,7 @@ Opens on [http://localhost:6006](http://localhost:6006) with stories for `Eztrak
 | `@eztrak/shared` | Main entry — re-exports utils, hooks, and components |
 | `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, date/format helpers, API error helpers, form field helpers |
 | `@eztrak/shared/hooks` | `usePaginationUrlSync`, `useGridHeight` |
-| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `CustomCellEditor`, `SearchInput`, `ResetFiltersButton`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
+| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `CustomCellEditor`, `SearchInput`, `ResetFiltersButton`, `TooltipText`, `ToolTip`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
 | `@eztrak/shared/components/tabs.css` | Default tab styles (CSS variables) |
 | `@eztrak/shared/components/loader.css` | Loader spinner styles |
 
@@ -599,6 +640,7 @@ Keyboard: Arrow keys move between tabs; Home/End jump to first/last enabled tab.
 - `react-hot-toast` — toast feedback in `CustomCellEditor` and `handleApiError`
 - `sweetalert2` — `ResetColumnsButton` and `confirmationAlert`
 - `react-icons` — `CustomCellEditor`, `SearchInput`, and `Modal`
+- `react-tooltip` — `ToolTip` and `TooltipText`
 - `framer-motion` — `Modal`
 - Works with any bundler that supports the [Node.js `exports` field](https://nodejs.org/api/packages.html#exports)
 

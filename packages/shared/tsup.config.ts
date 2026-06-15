@@ -21,6 +21,7 @@ export default defineConfig({
     "react-icons/fi",
     "react-icons/io5",
     "react-router-dom",
+    "react-tooltip",
     "sweetalert2",
   ],
 });

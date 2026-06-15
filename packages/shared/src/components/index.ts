@@ -28,6 +28,9 @@ export { Modal } from "./modal/Modal";
 export type { ModalProps } from "./modal/types";
 export { Loader } from "./Loader";
 export type { LoaderProps } from "./Loader/Loader.types";
+export { ToolTip } from "./tooltip/ToolTip";
+export { TooltipText } from "./tooltip/TooltipText";
+export type { ToolTipProps, TooltipTextProps } from "./tooltip/types";
 export { CustomCellEditor } from "./cell-editor/CustomCellEditor";
 export type {
   CellEditPayload,
