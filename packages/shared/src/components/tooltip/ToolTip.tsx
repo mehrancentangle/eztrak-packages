@@ -46,6 +46,7 @@ export function ToolTip({
       <Tooltip
         id={tooltipId}
         place={placement}
+        positionStrategy="fixed"
         delayShow={delayShow}
         delayHide={delayHide}
         className={tooltipClassName}
