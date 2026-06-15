@@ -93,7 +93,7 @@ export function SearchInput({
       onSubmit={handleSearch}
       className={cn(
         "flex items-center justify-between bg-white rounded-xl px-2 h-11 border",
-        searchWrapperClass
+        searchWrapperClass,
       )}
     >
       {showIcon && (
@@ -101,7 +101,7 @@ export function SearchInput({
           type="submit"
           className={cn(
             "bg-white text-secondary rounded-full flex items-center justify-center w-10 h-10",
-            searchBtn
+            searchBtn,
           )}
         >
           {customIcon ? (
