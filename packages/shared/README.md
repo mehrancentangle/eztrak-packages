@@ -401,6 +401,43 @@ import { ToolTip } from "@eztrak/shared/components";
 | `showTooltip` | `boolean` | `true` | Disable tooltip while still rendering truncated text |
 | `tooltipWhenTruncatedOnly` | `boolean` | `false` | Only show tooltip when truncation occurs |
 
+### Components — CardSkeleton
+
+Card-shaped loading placeholder for project cards, folders, user cards, and similar content. The default output matches the existing app `CardSkeleton` layout: avatar placeholder plus two text bars.
+
+```tsx
+import { CardSkeleton } from "@eztrak/shared/components";
+
+// Existing app behavior
+<CardSkeleton />
+
+// Render multiple placeholders
+<CardSkeleton count={4} className="rounded-xl bg-white shadow-sm" />
+
+// Image/card content variant
+<CardSkeleton
+  variant="image"
+  lines={3}
+  lineWidths={["w-48", "w-64", "w-40"]}
+/>
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"profile" \| "image" \| "content"` | `"profile"` | Preset layout. `profile` shows avatar, `image` shows image block, `content` shows only text lines |
+| `count` | `number` | `1` | Number of skeleton cards to render |
+| `lines` | `number` | `2` | Number of text placeholder lines |
+| `lineWidths` | `string[]` | `["w-32", "w-48"]` | Tailwind width classes for each line |
+| `showAvatar` | `boolean` | variant-based | Override avatar visibility |
+| `showImage` | `boolean` | variant-based | Override image placeholder visibility |
+| `animationDuration` | `CSSProperties["animationDuration"]` | `"0.7s"` | Pulse animation duration |
+| `className` | `string` | — | Extra classes for each skeleton card |
+| `avatarClassName` | `string` | — | Extra classes for the avatar placeholder |
+| `imageClassName` | `string` | — | Extra classes for the image placeholder |
+| `contentClassName` | `string` | — | Extra classes for the content row |
+| `lineClassName` | `string` | — | Extra classes for each text line |
+| `srLabel` | `string` | `"Loading..."` | Screen-reader loading label |
+
 ### Components — Loader
 
 Spinner for full-page or inline loading states. Requires `loader.css`:
@@ -578,7 +615,7 @@ Opens on [http://localhost:6006](http://localhost:6006) with stories for `Eztrak
 | `@eztrak/shared` | Main entry — re-exports utils, hooks, and components |
 | `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, date/format helpers, API error helpers, form field helpers |
 | `@eztrak/shared/hooks` | `usePaginationUrlSync`, `useGridHeight` |
-| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `CustomCellEditor`, `SearchInput`, `ResetFiltersButton`, `TooltipText`, `ToolTip`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
+| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `CustomCellEditor`, `SearchInput`, `ResetFiltersButton`, `TooltipText`, `ToolTip`, `CardSkeleton`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
 | `@eztrak/shared/components/tabs.css` | Default tab styles (CSS variables) |
 | `@eztrak/shared/components/loader.css` | Loader spinner styles |
 

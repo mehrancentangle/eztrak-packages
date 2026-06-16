@@ -28,6 +28,8 @@ export { Modal } from "./modal/Modal";
 export type { ModalProps } from "./modal/types";
 export { Loader } from "./Loader";
 export type { LoaderProps } from "./Loader/Loader.types";
+export { CardSkeleton } from "./skeleton/CardSkeleton";
+export type { CardSkeletonProps, CardSkeletonVariant } from "./skeleton/types";
 export { ToolTip } from "./tooltip/ToolTip";
 export { TooltipText } from "./tooltip/TooltipText";
 export type { ToolTipProps, TooltipTextProps } from "./tooltip/types";
