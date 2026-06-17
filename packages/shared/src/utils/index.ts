@@ -1,5 +1,6 @@
 export { cn } from "./cn";
 export * from "./helpers";
+export * from "./localStorage";
 export {
   handleApiError,
   formatValidationErrorsHtml,

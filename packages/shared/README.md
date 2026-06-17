@@ -72,6 +72,31 @@ truncateText("A very long description here", 10); // "A very ..."
 truncateFileName("annual-financial-report-2026.pdf", 20); // "annual-financ....pdf"
 ```
 
+Browser local storage helpers (JSON serialize/deserialize, safe fallbacks):
+
+```js
+import {
+  getItem,
+  setItem,
+  loadUserState,
+  saveUserState,
+  USER_STATE_STORAGE_KEY,
+} from "@eztrak/shared/utils";
+
+// User auth state (default key: "authState")
+saveUserState({ access_token: "...", name: "Ali" });
+const user = loadUserState();
+
+// Generic key/value storage
+setItem("selectedProject", { id: 1, name: "Project A" });
+const project = getItem("selectedProject");
+
+// Explicit fallback when a key is missing
+const permissions = getItem("userPermissionsNew", []);
+```
+
+Backward-compatible aliases are also exported: `get` / `set`, `getItemFromLocalStorage`, `storeItemInLocalStorage`, and `saveItemLocalStorage`.
+
 RTK Query errors (toast or SweetAlert — no extra wiring):
 
 ```js
@@ -613,7 +638,7 @@ Opens on [http://localhost:6006](http://localhost:6006) with stories for `Eztrak
 | Subpath | Description |
 | --- | --- |
 | `@eztrak/shared` | Main entry — re-exports utils, hooks, and components |
-| `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, date/format helpers, API error helpers, form field helpers |
+| `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, `getItem`, `setItem`, `loadUserState`, `saveUserState`, date/format helpers, API error helpers, form field helpers |
 | `@eztrak/shared/hooks` | `usePaginationUrlSync`, `useGridHeight` |
 | `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `CustomCellEditor`, `SearchInput`, `ResetFiltersButton`, `TooltipText`, `ToolTip`, `CardSkeleton`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
 | `@eztrak/shared/components/tabs.css` | Default tab styles (CSS variables) |
