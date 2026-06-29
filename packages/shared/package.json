@@ -1,6 +1,6 @@
 {
   "name": "@eztrak/shared",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "homepage": "https://github.com/mehrancentangle/eztrak-packages",
   "description": "Shared hooks, utils, and UI for Eztrak federation apps",
   "main": "./dist/index.js",
