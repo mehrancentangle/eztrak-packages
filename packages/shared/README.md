@@ -109,16 +109,171 @@ handleApiError(error, { fallbackMessage: "Save failed" });
 handleApiError(error, { showAlert: true });
 ```
 
-Confirmation dialog (SweetAlert2):
+### confirmationAlert
+
+Standard SweetAlert2 confirmation dialog for all Eztrak apps (Main, Vault, Pilot, PBF). Use **one function** with an options object — no per-module copies in `utils.js`.
+
+**Import:**
 
 ```js
+import { confirmationAlert } from "@eztrak/shared";
+// or
 import { confirmationAlert } from "@eztrak/shared/utils";
+```
 
+**Signature:**
+
+```ts
+confirmationAlert(
+  onConfirm: () => void | Promise<void>,
+  options?: ConfirmationAlertOptions
+): void
+```
+
+`onConfirm` may be sync or `async`. When a loader is active, the modal stays open until `onConfirm` resolves; on failure it shows an error message inside the dialog.
+
+#### Options
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `string` | `"Are you sure?"` (or `"Confirmation Required"` when `inputExpectedValue` is set) | Dialog heading |
+| `text` | `string` | — | Plain-text message (ignored when `html` is used without input) |
+| `html` | `string` | — | Custom HTML body (e.g. project delete instructions) |
+| `icon` | `"warning" \| "info" \| "question" \| "error" \| "success"` | `"warning"` | SweetAlert2 icon |
+| `confirmButtonText` | `string` | `"Yes"` | Confirm button label |
+| `cancelButtonText` | `string` | `"Cancel"` | Cancel button label |
+| `confirmButtonColor` | `string` | `"#FF7335"` | Confirm button color (brand orange) |
+| `cancelButtonColor` | `string` | `"#ff0000"` | Cancel button color |
+| `showLoaderOnConfirm` | `boolean` | `false` | Show loader while `onConfirm` runs (API deletes/updates) |
+| `inputExpectedValue` | `string` | — | User must type this value to confirm (trimmed, **case-sensitive**) |
+| `inputPlaceholder` | `string` | `"Type confirmation text to proceed"` | Placeholder for the confirmation input |
+| `reverseButtons` | `boolean` | — | Swap Cancel / Confirm order (e.g. logout) |
+| `focusCancel` | `boolean` | — | Focus Cancel on open (e.g. logout) |
+| `zIndex` | `number` | — | Stack the modal above tables/overlays |
+
+#### Behavior modes
+
+1. **Simple confirm** — no `showLoaderOnConfirm`, no `inputExpectedValue`  
+   User clicks Yes → `onConfirm()` runs → modal closes.
+
+2. **Loader confirm** — `showLoaderOnConfirm: true`  
+   User clicks confirm → loader → `onConfirm()` awaited → success closes modal; error shows validation message and keeps modal open.
+
+3. **Typed confirm** — `inputExpectedValue` set  
+   Input field appears; user must type the exact value (`typed.trim() === expected.trim()`). Loader is enabled automatically.
+
+#### Examples
+
+**Simple Yes/No (column reset, generic confirm):**
+
+```js
 confirmationAlert(() => resetLayout(), {
   title: "Reset column layout to default",
   text: "Reset column order, widths, and visibility to defaults?",
   icon: "warning",
 });
+```
+
+**Custom button colors:**
+
+```js
+confirmationAlert(() => handleDelete(), {
+  title: "Delete this item?",
+  confirmButtonText: "Yes, delete it!",
+  confirmButtonColor: "#B91C1C",
+  cancelButtonColor: "#6b7280",
+  showLoaderOnConfirm: true,
+});
+```
+
+**Bulk delete with API loader:**
+
+```js
+confirmationAlert(async () => {
+  await dispatch(deleteItems(ids)).unwrap();
+}, {
+  text: "Are you sure you want to delete selected items?",
+  confirmButtonText: "OK",
+  showLoaderOnConfirm: true,
+});
+```
+
+**Type `DELETE` to confirm:**
+
+```js
+confirmationAlert(() => bulkDelete(), {
+  text: "Are you sure you want to delete selected items?",
+  inputExpectedValue: "DELETE",
+  confirmButtonText: "Confirm",
+});
+```
+
+**Delete project — type project name:**
+
+```js
+confirmationAlert(async () => {
+  await deleteProject(projectId);
+}, {
+  title: "Delete Project",
+  html: `
+    <p style="font-size:14px">To confirm, please type the project name below:</p>
+    <p style="font-weight:bold;color:#d9534f">${projectName}</p>
+  `,
+  inputExpectedValue: projectName,
+  inputPlaceholder: "Enter project name",
+  confirmButtonText: "Delete",
+  showLoaderOnConfirm: true,
+});
+```
+
+**Logout:**
+
+```js
+confirmationAlert(() => authService.logout(), {
+  title: "Logout Confirmation",
+  text: "Are you sure you want to logout?",
+  icon: "question",
+  confirmButtonText: "Yes, Logout",
+  cancelButtonColor: "#6b7280",
+  reverseButtons: true,
+  focusCancel: true,
+});
+```
+
+**Modal above AG Grid / overlays:**
+
+```js
+confirmationAlert(() => deleteRow(), {
+  text: "Are you sure?",
+  showLoaderOnConfirm: true,
+  zIndex: 9999,
+});
+```
+
+#### Replacing local helpers
+
+When migrating, remove duplicate functions from app `utils.js` and use `confirmationAlert` from `@eztrak/shared` instead:
+
+| Old local function | Replacement |
+| --- | --- |
+| `confirmationAlert(onConfirm, text, icon)` (main-app 3-arg) | `confirmationAlert(onConfirm, { text, icon, confirmButtonText: "OK" })` |
+| `confirmationAlert(onConfirm, { ... })` (vault/pilot/pbf) | Same options; change import to `@eztrak/shared` |
+| `showDeleteConfirmation(onConfirm)` | `confirmationAlert(onConfirm, { text: "...", confirmButtonText: "OK", showLoaderOnConfirm: true })` |
+| `showDeletePrompt(onConfirm, projectName)` | `confirmationAlert(onConfirm, { title: "Delete Project", html: "...", inputExpectedValue: projectName, showLoaderOnConfirm: true, confirmButtonText: "Delete" })` |
+| `showLogoutConfirmation(onConfirm)` | `confirmationAlert(onConfirm, { title: "Logout Confirmation", text: "...", icon: "question", reverseButtons: true, focusCancel: true, cancelButtonColor: "#6b7280" })` |
+| `confirmationAlertWithInput(onConfirm, "DELETE", text)` | `confirmationAlert(onConfirm, { text, inputExpectedValue: "DELETE", confirmButtonText: "Confirm" })` |
+
+**Not replaced by this helper:** `showDeleteConfirmationAlert` (red button + inline “Deleting…” spinner on the button) — keep that component or pass equivalent colors + `showLoaderOnConfirm` if the default center loader is acceptable.
+
+**Direct `Swal.fire({ ... })` calls** in budget/RFQ/forecast flows are separate one-off UIs; migrate only when those screens are touched.
+
+#### TypeScript
+
+```ts
+import {
+  confirmationAlert,
+  type ConfirmationAlertOptions,
+} from "@eztrak/shared";
 ```
 
 ### Hooks
@@ -609,6 +764,8 @@ Pass classes per slot — they merge with the default `eztrak-tabs-*` styles via
 ```js
 import {
   cn,
+  confirmationAlert,
+  handleApiError,
   useGridHeight,
   EztrakTabs,
   CustomPagination,
@@ -638,7 +795,7 @@ Opens on [http://localhost:6006](http://localhost:6006) with stories for `Eztrak
 | Subpath | Description |
 | --- | --- |
 | `@eztrak/shared` | Main entry — re-exports utils, hooks, and components |
-| `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, `getItem`, `setItem`, `loadUserState`, `saveUserState`, date/format helpers, API error helpers, form field helpers |
+| `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, `ConfirmationAlertOptions`, `getItem`, `setItem`, `loadUserState`, `saveUserState`, date/format helpers, API error helpers, form field helpers |
 | `@eztrak/shared/hooks` | `usePaginationUrlSync`, `useGridHeight` |
 | `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `CustomCellEditor`, `SearchInput`, `ResetFiltersButton`, `TooltipText`, `ToolTip`, `CardSkeleton`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
 | `@eztrak/shared/components/tabs.css` | Default tab styles (CSS variables) |
