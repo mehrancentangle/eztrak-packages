@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import Swal, { type SweetAlertResult } from "sweetalert2";
+import Swal, { type SweetAlertOptions, type SweetAlertResult } from "sweetalert2";
 
 export type RtkQueryError = {
   status?: number | string;
@@ -159,7 +159,7 @@ export function confirmationAlert(
     `
       : undefined);
 
-  const swalOptions: Parameters<typeof Swal.fire>[0] = {
+  const swalOptions: SweetAlertOptions = {
     title,
     icon,
     showCancelButton: true,
