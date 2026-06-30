@@ -17,13 +17,17 @@ export type {
   ResetColumnsButtonProps,
   TableLayoutToolbarControlsProps,
 } from "./pagination/types";
+export { DropdownFilter } from "./search-filters/DropdownFilter";
 export { ResetFiltersButton } from "./search-filters/ResetFiltersButton";
 export { SearchInput } from "./search-filters/SearchInput";
+export { dropdownStyles } from "./search-filters/dropdownStyles";
 export type {
+  DropdownFilterProps,
   ResetFiltersButtonProps,
   ResetFiltersButtonVariant,
   SearchInputProps,
 } from "./search-filters/types";
+
 export { Modal } from "./modal/Modal";
 export type { ModalProps } from "./modal/types";
 export { Loader } from "./Loader";

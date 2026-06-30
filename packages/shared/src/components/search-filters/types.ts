@@ -1,4 +1,5 @@
 import type { InputHTMLAttributes, ReactNode } from "react";
+import type { Props as SelectProps } from "react-select";
 
 export type ResetFiltersButtonVariant =
   | "primary"
@@ -43,4 +44,20 @@ export interface SearchInputProps
   debounceDelay?: number;
   customIcon?: ReactNode | null;
   defaultValue?: string;
+}
+
+export interface DropdownFilterProps<Option extends Record<string, unknown>>
+  extends Omit<
+    SelectProps<Option, false>,
+    "value" | "onChange" | "options" | "styles" | "name"
+  > {
+  /** URL search param key synced with the selected option. */
+  name: string;
+  /** Option field used as the search param value. Defaults to "id". */
+  valueKey?: string;
+  options?: Option[];
+  placeholder?: string;
+  /** Partial theme overrides merged with the default Eztrak palette. */
+  /** Border radius applied to the control, menu, and options. Defaults to "5px". */
+  borderRadius?: string;
 }
