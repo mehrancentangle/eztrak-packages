@@ -45,3 +45,10 @@ export type {
   CustomCellEditorRef,
   DropdownOption,
 } from "./cell-editor/types";
+export { PopupCellRenderer } from "./popup-cell-renderer/PopupCellRenderer";
+export type {
+  PopupActionHandler,
+  PopupCellRendererParams,
+  PopupCellRendererProps,
+  PopupDropDownContent,
+} from "./popup-cell-renderer/types";
