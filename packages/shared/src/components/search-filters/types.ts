@@ -60,4 +60,6 @@ export interface DropdownFilterProps<Option extends Record<string, unknown>>
   /** Partial theme overrides merged with the default Eztrak palette. */
   /** Border radius applied to the control, menu, and options. Defaults to "5px". */
   borderRadius?: string;
+  /** When true, persists the selected value in localStorage under `name`. */
+  saveToLocalStorage?: boolean;
 }
