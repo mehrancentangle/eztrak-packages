@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "build:shared": "npm run build -w @eztrak/shared",
+    "build:gallery": "npm run build -w @eztrak/gallery",
     "storybook": "npm run storybook -w @eztrak/shared"
   },
   "dependencies": {

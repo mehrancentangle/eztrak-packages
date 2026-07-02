@@ -1,0 +1,21 @@
+/* @eztrak/gallery - Optional base styles */
+
+/* Scrollbar styling for thumbnail strips */
+.eztrak-gallery-thumbs::-webkit-scrollbar {
+  height: 6px;
+}
+.eztrak-gallery-thumbs::-webkit-scrollbar-track {
+  background: transparent;
+}
+.eztrak-gallery-thumbs::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+.eztrak-gallery-thumbs::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Prevent body scroll when preview is open */
+body.gallery-preview-open {
+  overflow: hidden !important;
+}
