@@ -10,14 +10,14 @@ const themeColors = {
 
 export
  const dropdownStyles = <Option,>(
-  _borderRadius = "5px",
+  _borderRadius: string
 ): StylesConfig<Option, false> => ({
   control: (provided, state) => ({
     ...provided,
     fontSize: "14px",
     padding: "4px 8px",
     minWidth: "180px",
-    borderRadius: "5px",
+    borderRadius: _borderRadius,
     cursor: "pointer",
     borderColor: state.isFocused ? themeColors.primary : "#e0e0e0",
     boxShadow: state.isFocused

@@ -5,6 +5,7 @@ export interface ModalProps {
   onClose: () => void;
   title?: ReactNode;
   children?: ReactNode;
+  modalHeader?: ReactNode;
   footer?: ReactNode;
   className?: string;
   width?: string;

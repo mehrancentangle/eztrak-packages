@@ -12,6 +12,7 @@ export function Modal({
   onClose,
   title,
   children,
+  modalHeader,
   footer,
   className = "w-2/3",
   width,
@@ -90,40 +91,44 @@ export function Modal({
             }}
           >
             {/* Modal Header */}
-            <div
-              style={{
-                borderRadius: "24px 24px 0 0",
-              }}
-              className="sticky top-0 z-10 flex justify-between items-center bg-white text-2xl p-8 pb-4 rounded-t-3xl"
-            >
-              <h2 className="font-semibold">{title}</h2>
-              <div className="flex items-center space-x-4">
-                {onPrint && (
+            {modalHeader ? 
+               modalHeader 
+            : (
+              <div
+                style={{
+                  borderRadius: "24px 24px 0 0",
+                }}
+                className="sticky top-0 z-10 flex justify-between items-center bg-white text-2xl p-8 pb-4 rounded-t-3xl"
+              >
+                <h2 className="font-semibold">{title}</h2>
+                <div className="flex items-center space-x-4">
+                  {onPrint && (
+                    <button
+                      onClick={onPrint}
+                      className="flex items-center gap-1 hover:text-gray-300 text-sm border p-1 rounded"
+                    >
+                      <FaPrint name="FaPrint" />
+                      <span>Print</span>
+                    </button>
+                  )}
+                  {onExport && (
+                    <button
+                      onClick={onExport}
+                      className="flex items-center gap-1 hover:text-gray-300 text-sm border p-1 rounded"
+                    >
+                      <FaFileExport />
+                      <span>Export</span>
+                    </button>
+                  )}
                   <button
-                    onClick={onPrint}
-                    className="flex items-center gap-1 hover:text-gray-300 text-sm border p-1 rounded"
+                    onClick={onClose}
+                    className="px-2 hover:opacity-70 transition-opacity"
                   >
-                    <FaPrint name="FaPrint" />
-                    <span>Print</span>
+                    <IoCloseCircleOutline color="#8898AA" size={25} />
                   </button>
-                )}
-                {onExport && (
-                  <button
-                    onClick={onExport}
-                    className="flex items-center gap-1 hover:text-gray-300 text-sm border p-1 rounded"
-                  >
-                    <FaFileExport />
-                    <span>Export</span>
-                  </button>
-                )}
-                <button
-                  onClick={onClose}
-                  className="px-2 hover:opacity-70 transition-opacity"
-                >
-                  <IoCloseCircleOutline color="#8898AA" size={25} />
-                </button>
+                </div>
               </div>
-            </div>
+            )}
             <div
               className={cn(
                 "overflow-y-auto px-8 pb-8 grow scroll scrollbar-hidden",
@@ -135,13 +140,14 @@ export function Modal({
 
             {/* Modal Footer */}
             {footer && (
-
               <div
-              className={cn("sticky bottom-0 flex justify-end p-4 space-x-4 border-t bg-white ",footerClassName)}
-
+                className={cn(
+                  "sticky bottom-0 flex justify-end p-4 space-x-4 border-t bg-white ",
+                  footerClassName,
+                )}
                 style={{
                   zIndex: 1000,
-             
+
                   borderRadius: "24px",
                 }}
               >

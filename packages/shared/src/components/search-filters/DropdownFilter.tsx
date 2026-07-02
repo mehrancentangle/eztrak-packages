@@ -15,7 +15,7 @@ export function DropdownFilter<Option extends Record<string, unknown>>({
   valueKey = "id",
   options,
   placeholder,
-  borderRadius = "20px",
+  borderRadius = "12px",
   className,
   isClearable = true,
   isSearchable = true,
