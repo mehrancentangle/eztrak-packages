@@ -87,7 +87,7 @@ export function CarouselView({
                 type="button"
                 onClick={() => onIndexChange(i)}
                 className={cn(
-                  "flex-shrink-0 rounded-lg overflow-hidden transition-all border-2",
+                  "shrink-0 rounded-lg overflow-hidden transition-all border-2",
                   selectedIndex === i
                     ? "border-blue-500 shadow-md scale-105"
                     : "border-transparent opacity-60 hover:opacity-100",

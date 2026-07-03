@@ -45,6 +45,13 @@ const TOOLBAR_BTN = cn(
   "disabled:opacity-40 disabled:cursor-not-allowed",
 );
 
+const NAV_BTN = cn(
+  "absolute z-10 p-3 rounded-full",
+  "bg-white/20 text-white hover:bg-white/35",
+  "transition-all shadow-lg backdrop-blur-sm border border-white/25",
+  "hover:scale-110 active:scale-95",
+);
+
 export function ImagePreview({
   images,
   isOpen,
@@ -236,14 +243,20 @@ export function ImagePreview({
     <>
       <div
         ref={containerRef}
-        className="fixed inset-0 flex flex-col bg-black/95"
+        className={cn(
+          "fixed inset-0 flex flex-col",
+          isFullscreen ? "bg-black" : "bg-black/85 backdrop-blur-xl",
+        )}
         style={{ zIndex }}
         role="dialog"
         aria-modal="true"
         aria-label="Image preview"
       >
         {/* Top toolbar */}
-        <div className="flex items-center justify-between px-4 py-3 bg-black/60 backdrop-blur-sm">
+        <div className={cn(
+          "flex items-center justify-between px-4 py-3 backdrop-blur-sm",
+          isFullscreen ? "bg-white/10" : "bg-black/40",
+        )}>
           <div className="flex items-center gap-1 text-white/70 text-sm">
             {showImageInfo && (
               <span>
@@ -333,23 +346,33 @@ export function ImagePreview({
 
         {/* Main image area */}
         <div
-          className="flex-1 relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing select-none"
+          className="relative flex-1 flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing select-none"
           onWheel={handleWheel}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          {/* Nav: Previous */}
+          {/* Navigation arrows */}
           {imageDocs.length > 1 && (
-            <button
-              type="button"
-              className="absolute left-4 z-10 p-3 rounded-full bg-black/40 text-white/80 hover:bg-black/60 hover:text-white transition-colors"
-              onClick={goPrev}
-              aria-label="Previous image"
-            >
-              <BsChevronLeft size={20} />
-            </button>
+            <>
+              <button
+                type="button"
+                className={cn(NAV_BTN, "left-4 top-1/2 -translate-y-1/2")}
+                onClick={goPrev}
+                aria-label="Previous image"
+              >
+                <BsChevronLeft size={24} />
+              </button>
+              <button
+                type="button"
+                className={cn(NAV_BTN, "right-4 top-1/2 -translate-y-1/2")}
+                onClick={goNext}
+                aria-label="Next image"
+              >
+                <BsChevronRight size={24} />
+              </button>
+            </>
           )}
 
           <AnimatePresence mode="wait">
@@ -364,7 +387,7 @@ export function ImagePreview({
               style={{
                 ...transformStyle,
                 maxHeight: "calc(100vh - 10rem)",
-                maxWidth: "90vw",
+                maxWidth: "80vw",
                 objectFit: "contain",
               }}
               draggable={false}
@@ -374,47 +397,44 @@ export function ImagePreview({
               }}
             />
           </AnimatePresence>
-
-          {/* Nav: Next */}
-          {imageDocs.length > 1 && (
-            <button
-              type="button"
-              className="absolute right-4 z-10 p-3 rounded-full bg-black/40 text-white/80 hover:bg-black/60 hover:text-white transition-colors"
-              onClick={goNext}
-              aria-label="Next image"
-            >
-              <BsChevronRight size={20} />
-            </button>
-          )}
         </div>
 
         {/* Thumbnails strip */}
         {useThumbnails && (
-          <div className="flex items-center justify-center gap-2 py-3 px-4 bg-black/60 overflow-x-auto">
-            {imageDocs.map((img, i) => {
-              const thumbUrl = getVersionedUrl(img.url, baseUrl, imageVersions);
-              return (
-                <button
-                  key={img.id ?? i}
-                  type="button"
-                  onClick={() => setSelectedIndex(i)}
-                  className={cn(
-                    "flex-shrink-0 rounded-lg overflow-hidden transition-all",
-                    "w-14 h-14 border-2",
-                    selectedIndex === i
-                      ? "border-white ring-1 ring-white/50 scale-105"
-                      : "border-transparent opacity-60 hover:opacity-100",
-                  )}
-                >
-                  <img
-                    src={thumbUrl}
-                    alt={img.name || `Thumbnail ${i + 1}`}
-                    className="w-full h-full object-cover"
-                    draggable={false}
-                  />
-                </button>
-              );
-            })}
+          <div className="flex flex-col items-center gap-2 py-3 px-4 bg-black/60 backdrop-blur-sm">
+            <div className="flex items-center justify-center gap-3 w-full overflow-x-auto scrollbar-thin">
+              {imageDocs.map((img, i) => {
+                const thumbUrl = getVersionedUrl(img.url, baseUrl, imageVersions);
+                return (
+                  <button
+                    key={img.id ?? i}
+                    type="button"
+                    onClick={() => setSelectedIndex(i)}
+                    className={cn(
+                      "flex-shrink-0 rounded-xl overflow-hidden transition-all",
+                      "w-20 h-20 border-2",
+                      selectedIndex === i
+                        ? "border-white ring-2 ring-white/60 scale-105 opacity-100"
+                        : "border-white/20 opacity-60 hover:opacity-100 hover:border-white/40",
+                    )}
+                  >
+                    <img
+                      src={thumbUrl}
+                      alt={img.name || `Thumbnail ${i + 1}`}
+                      className="w-full h-full object-cover"
+                      draggable={false}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+            {showImageInfo && currentImage && (
+              <p className="text-sm text-white/80 text-center truncate max-w-[90vw]">
+                {currentImage.name}
+                {imageDocs.length > 1 &&
+                  ` (${selectedIndex + 1} of ${imageDocs.length})`}
+              </p>
+            )}
           </div>
         )}
       </div>

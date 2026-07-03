@@ -97,23 +97,23 @@ export function GridView({
                   style={{ height: imageHeight, width: imageWidth }}
                   draggable={false}
                 />
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="flex flex-col items-center gap-1">
-                    <BsZoomIn className="text-white" size={22} />
-                    {enableDelete && (
-                      <button
-                        type="button"
-                        className="bg-white rounded-full p-1.5 hover:bg-red-50 transition-colors"
-                        title="Delete"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete?.(image, index);
-                        }}
-                      >
-                        <BsTrash className="text-red-600" size={14} />
-                      </button>
-                    )}
-                  </div>
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="bg-white/90 rounded-full p-2 pointer-events-none">
+                    <BsZoomIn className="text-gray-700" size={20} />
+                  </span>
+                  {enableDelete && (
+                    <button
+                      type="button"
+                      className="bg-white/90 rounded-full p-2 hover:bg-red-50 transition-colors"
+                      title="Delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete?.(image, index);
+                      }}
+                    >
+                      <BsTrash className="text-red-600" size={20} />
+                    </button>
+                  )}
                 </div>
               </>
             ) : (
