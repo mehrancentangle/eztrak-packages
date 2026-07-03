@@ -52,3 +52,5 @@ export type {
   PopupCellRendererProps,
   PopupDropDownContent,
 } from "./popup-cell-renderer/types";
+export { TableErrorBoundary } from "./table-error-boundary/TableErrorBoundary";
+export type { TableErrorBoundaryProps } from "./table-error-boundary/types";

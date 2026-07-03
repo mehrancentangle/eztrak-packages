@@ -17,6 +17,96 @@ export interface HandleApiErrorOptions {
   fallbackMessage?: string;
 }
 
+export type ErrorSuggestedAction =
+  | "retry"
+  | "refresh"
+  | "contact-support"
+  | "none";
+
+export type ErrorClassification = {
+  isRetryable: boolean;
+  userMessage: string;
+  technicalMessage: string;
+  suggestedAction: ErrorSuggestedAction;
+};
+
+/** Returns true for transient network/server errors that warrant automatic retry. */
+export function isRetryableError(
+  error: RtkQueryError | null | undefined
+): boolean {
+  if (!error) return false;
+
+  const status = error.status ?? error.originalStatus;
+
+  if (
+    status === "FETCH_ERROR" ||
+    status === "TIMEOUT_ERROR" ||
+    status === "PARSING_ERROR"
+  ) {
+    return true;
+  }
+
+  if (typeof status === "number") {
+    if (status === 502 || status === 503 || status === 504) return true;
+    if (status >= 500 && status < 600) return true;
+  }
+
+  return false;
+}
+
+/** Classifies RTK Query errors for user messaging and retry guidance. */
+export function classifyError(
+  error: RtkQueryError | null | undefined
+): ErrorClassification {
+  if (!error) {
+    return {
+      isRetryable: false,
+      userMessage: "An error occurred.",
+      technicalMessage: "Unknown error",
+      suggestedAction: "none",
+    };
+  }
+
+  const status = error.status ?? error.originalStatus;
+  const data = error.data;
+
+  if (
+    status === "FETCH_ERROR" ||
+    status === "TIMEOUT_ERROR" ||
+    status === "PARSING_ERROR"
+  ) {
+    return {
+      isRetryable: true,
+      userMessage: "Network error. Please check your connection.",
+      technicalMessage: "Network request failed",
+      suggestedAction: "retry",
+    };
+  }
+
+  if (typeof status === "number" && status >= 500 && status < 600) {
+    return {
+      isRetryable: true,
+      userMessage: "Server is temporarily unavailable. Please try again.",
+      technicalMessage: `Server error: ${status}`,
+      suggestedAction: "retry",
+    };
+  }
+
+  return {
+    isRetryable: false,
+    userMessage:
+      data?.message ||
+      data?.title ||
+      error.error ||
+      "An error occurred. Please try again.",
+    technicalMessage:
+      typeof status === "number" || typeof status === "string"
+        ? `Client error: ${status}`
+        : "Request failed",
+    suggestedAction: "none",
+  };
+}
+
 export function formatValidationErrorsHtml(
   errors: Record<string, string[]>
 ): string {
