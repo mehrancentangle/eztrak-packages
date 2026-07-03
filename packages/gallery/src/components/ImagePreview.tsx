@@ -245,7 +245,7 @@ export function ImagePreview({
         ref={containerRef}
         className={cn(
           "fixed inset-0 flex flex-col",
-          isFullscreen ? "bg-black" : "bg-black/85 backdrop-blur-xl",
+          isFullscreen ? "bg-black" : "bg-black bg-opacity-75",
         )}
         style={{ zIndex }}
         role="dialog"
@@ -277,7 +277,7 @@ export function ImagePreview({
                 >
                   <BsZoomOut size={18} />
                 </button>
-                <span className="text-white/60 text-xs min-w-[3rem] text-center">
+                <span className="text-white/60 text-xs min-w-12 text-center">
                   {Math.round(transform.zoom * 100)}%
                 </span>
                 <button
@@ -346,7 +346,7 @@ export function ImagePreview({
 
         {/* Main image area */}
         <div
-          className="relative flex-1 flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing select-none"
+          className="relative flex-1 flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing select-none bg-black bg-opacity-75"
           onWheel={handleWheel}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -401,7 +401,7 @@ export function ImagePreview({
 
         {/* Thumbnails strip */}
         {useThumbnails && (
-          <div className="flex flex-col items-center gap-2 py-3 px-4 bg-black/60 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-2 py-3 px-4 bg-black bg-opacity-75">
             <div className="flex items-center justify-center gap-3 w-full overflow-x-auto scrollbar-thin">
               {imageDocs.map((img, i) => {
                 const thumbUrl = getVersionedUrl(img.url, baseUrl, imageVersions);
@@ -411,7 +411,7 @@ export function ImagePreview({
                     type="button"
                     onClick={() => setSelectedIndex(i)}
                     className={cn(
-                      "flex-shrink-0 rounded-xl overflow-hidden transition-all",
+                      "shrink-0 rounded-xl overflow-hidden transition-all",
                       "w-20 h-20 border-2",
                       selectedIndex === i
                         ? "border-white ring-2 ring-white/60 scale-105 opacity-100"

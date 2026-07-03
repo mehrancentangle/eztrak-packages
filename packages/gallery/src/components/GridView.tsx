@@ -129,7 +129,7 @@ export function GridView({
             )}
 
             {showFileName && isImage && (
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-1">
+              <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/60 to-transparent p-1">
                 <p className="text-[10px] text-white truncate text-center">
                   {image.name || getFileName(image.url)}
                 </p>

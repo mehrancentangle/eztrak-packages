@@ -1,6 +1,6 @@
 {
   "name": "@eztrak/gallery",
-  "version": "0.1.7",
+  "version": "0.2.2",
   "homepage": "https://github.com/mehrancentangle/eztrak-packages",
   "description": "Reusable image gallery, carousel, and preview components for EzTrak apps",
   "main": "./dist/index.js",
