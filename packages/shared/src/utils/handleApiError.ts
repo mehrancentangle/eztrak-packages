@@ -172,6 +172,7 @@ export function handleApiError(
     data?.message ||
     data?.title ||
     error.error ||
+   error.message ||
     "An error occurred. Please try again.";
 
   toast.error(message);
