@@ -9,6 +9,7 @@ export type RtkQueryError = {
     message?: string;
     title?: string;
   };
+  message?: string;
   error?: string;
 };
 
