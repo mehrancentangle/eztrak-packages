@@ -44,6 +44,11 @@ export interface SearchInputProps
   debounceDelay?: number;
   customIcon?: ReactNode | null;
   defaultValue?: string;
+  /**
+   * Pagination param reset to page 1 when the query changes. Defaults to "page";
+   * match `CustomPagination`'s `paramNames.page` if the screen overrides it.
+   */
+  pageParam?: string;
 }
 
 export interface DropdownFilterProps<Option extends Record<string, unknown>>
@@ -62,4 +67,9 @@ export interface DropdownFilterProps<Option extends Record<string, unknown>>
   borderRadius?: string;
   /** When true, persists the selected value in localStorage under `name`. */
   saveToLocalStorage?: boolean;
+  /**
+   * Pagination param reset to page 1 when the selection changes. Defaults to
+   * "page"; match `CustomPagination`'s `paramNames.page` if the screen overrides it.
+   */
+  pageParam?: string;
 }

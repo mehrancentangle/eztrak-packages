@@ -8,6 +8,7 @@ import {
 import { FiSearch } from "react-icons/fi";
 import { useSearchParams } from "react-router-dom";
 import { cn } from "../../utils/cn";
+import { resetPageParam } from "../../utils/resetPageParam";
 import type { SearchInputProps } from "./types";
 
 export function SearchInput({
@@ -24,6 +25,7 @@ export function SearchInput({
   debounceDelay = 500,
   customIcon = null,
   defaultValue,
+  pageParam = "page",
   ...props
 }: SearchInputProps) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,17 +35,23 @@ export function SearchInput({
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const updateSearchParams = (searchQuery: string) => {
-    if (searchQuery?.trim()) {
-      setSearchParams((prev) => {
-        prev.set(defaultParam, searchQuery.trim());
+    const nextValue = searchQuery?.trim() ?? "";
+
+    setSearchParams((prev) => {
+      // Same query as the URL already holds: the result set is unchanged, so
+      // leave the current page alone.
+      if ((prev.get(defaultParam) ?? "") === nextValue) {
         return prev;
-      });
-    } else {
-      setSearchParams((prev) => {
+      }
+
+      if (nextValue) {
+        prev.set(defaultParam, nextValue);
+      } else {
         prev.delete(defaultParam);
-        return prev;
-      });
-    }
+      }
+
+      return resetPageParam(prev, pageParam);
+    });
   };
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {

@@ -3,6 +3,7 @@ import Select from "react-select";
 import { useSearchParams } from "react-router-dom";
 import { dropdownStyles } from "./dropdownStyles";
 import { cn } from "../../utils/cn";
+import { resetPageParam } from "../../utils/resetPageParam";
 import {
   getItemFromLocalStorage,
   removeItem,
@@ -22,6 +23,7 @@ export function DropdownFilter<Option extends Record<string, unknown>>({
   isDisabled = false,
   isLoading = false,
   saveToLocalStorage = false,
+  pageParam = "page",
   ...otherProps
 }: DropdownFilterProps<Option>) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,10 +39,12 @@ export function DropdownFilter<Option extends Record<string, unknown>>({
     if (stored != null && stored !== "") {
       setSearchParams((prev) => {
         prev.set(name, String(stored));
-        return prev;
+        // Restoring a stored filter narrows the result set too, so a deep-linked
+        // page number would land out of range.
+        return resetPageParam(prev, pageParam);
       });
     }
-  }, [saveToLocalStorage, name, searchParams, setSearchParams]);
+  }, [saveToLocalStorage, name, pageParam, searchParams, setSearchParams]);
 
   const currentValue = searchParams.get(name);
   const selectedOption = currentValue
@@ -54,12 +58,19 @@ export function DropdownFilter<Option extends Record<string, unknown>>({
       selected && selected[valueKey] !== "" ? String(selected[valueKey]) : null;
 
     setSearchParams((prev) => {
+      // Re-selecting the current option leaves the result set alone, so keep the
+      // page the user is on.
+      if ((prev.get(name) ?? "") === (selectedValue ?? "")) {
+        return prev;
+      }
+
       if (!selectedValue) {
         prev.delete(name);
       } else {
         prev.set(name, selectedValue);
       }
-      return prev;
+
+      return resetPageParam(prev, pageParam);
     });
 
     if (saveToLocalStorage) {

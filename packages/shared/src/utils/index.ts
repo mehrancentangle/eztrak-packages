@@ -1,4 +1,5 @@
 export { cn } from "./cn";
+export { resetPageParam } from "./resetPageParam";
 export * from "./helpers";
 export * from "./localStorage";
 export * from "./permissions";
