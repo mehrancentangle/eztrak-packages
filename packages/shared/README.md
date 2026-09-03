@@ -97,6 +97,23 @@ const permissions = getItem("userPermissionsNew", []);
 
 Backward-compatible aliases are also exported: `get` / `set`, `getItemFromLocalStorage`, `storeItemInLocalStorage`, and `saveItemLocalStorage`.
 
+Reset pagination when a filter changes the result set:
+
+```js
+import { resetPageParam } from "@eztrak/shared/utils";
+
+setSearchParams((prev) => {
+  prev.set("year", "2026");
+  return resetPageParam(prev); // page -> "1"
+});
+```
+
+`resetPageParam(params, pageKey = "page", defaultPage = "1")` mutates and returns the
+same `URLSearchParams`, so it chains inside a `setSearchParams` updater. It rewrites
+`pageKey` **only when that param already exists**, so filter-only screens that never
+paginate keep a clean URL. `SearchInput` and `DropdownFilter` call it for you — reach
+for it directly only when you build a custom filter control.
+
 RTK Query errors (toast or SweetAlert — no extra wiring):
 
 ```js
@@ -303,6 +320,11 @@ usePaginationUrlSync(
   setPerPage
 );
 ```
+
+The hook only mirrors the URL into local state — it does not know about filters. The
+shared filter controls (`SearchInput`, `DropdownFilter`) reset `page` to `1` themselves
+whenever they change the result set, which keeps a user who is on page 17 from
+requesting page 17 of a two-page filtered result and seeing an empty table.
 
 ### Components — CustomPagination
 
@@ -522,10 +544,18 @@ import { HiOutlineSearch } from "react-icons/hi";
 
 `SearchInput` reads and writes a single query param (default `query`). Clearing the input removes that param from the URL. The input stays in sync when the URL changes externally (e.g. browser back/forward or `ResetFiltersButton`).
 
+Changing the query also resets `page` to `1` in the same URL update, because the filtered
+result set has a different page count — without it, a user searching from page 17 would
+request page 17 of a one-page result and get an empty table. The reset is skipped when the
+submitted query matches what the URL already holds, so re-submitting the same search leaves
+the current page alone. Screens without a `page` param are unaffected. Override the param
+key with `pageParam` if your `CustomPagination` uses a custom `paramNames.page`.
+
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `placeholder` | `string` | `"Search..."` | Input placeholder |
 | `defaultParam` | `string` | `"query"` | URL search param key |
+| `pageParam` | `string` | `"page"` | Pagination param reset to `1` when the query changes |
 | `defaultValue` | `string` | — | Initial value when the param is absent |
 | `liveSearch` | `boolean` | `false` | Update URL on input change (debounced) |
 | `debounceDelay` | `number` | `500` | Debounce delay in ms when `liveSearch` is true |
@@ -539,6 +569,85 @@ import { HiOutlineSearch } from "react-icons/hi";
 | `searchIconClassName` | `string` | — | Classes for the default search icon |
 
 Also accepts standard `<input>` HTML attributes (except `name`, `type`, `value`, `onChange`, and `defaultValue`, which are managed internally).
+
+### Components — DropdownFilter
+
+URL-synced single-select filter built on [`react-select`](https://react-select.com). The
+selection is stored in a search param named after the `name` prop. Requires a React Router
+context (`useSearchParams`).
+
+```tsx
+import { DropdownFilter } from "@eztrak/shared/components";
+
+// Writes ?department=<id> to the URL
+<DropdownFilter
+  name="department"
+  options={departments}
+  placeholder="Select department"
+/>
+```
+
+Options are plain objects. The param value is read from `valueKey` (default `id`), and the
+visible label falls back through `label` → `name` → `valueKey`:
+
+```tsx
+const years = [
+  { id: "7c4a227b-de2c-42d7-8be7-b3bb4cfa2ca5", name: "2026" },
+  { id: "0d1f9a34-4b21-4b0e-9a77-2f1c8d5e6a90", name: "2025" },
+];
+
+<DropdownFilter name="year" options={years} placeholder="Select year" />
+```
+
+#### Custom value key
+
+```tsx
+<DropdownFilter name="unit" valueKey="unitCode" options={units} />
+```
+
+#### Persist the selection across visits
+
+```tsx
+<DropdownFilter name="year" options={years} saveToLocalStorage />
+```
+
+Stores the value under `name` in localStorage and restores it on mount **only when the URL
+has no value for that param**, so an explicit link always wins. Clearing the filter removes
+the stored value. A restore also resets `page` to `1`, since it narrows the result set.
+
+#### Loading and disabled states
+
+```tsx
+<DropdownFilter
+  name="department"
+  options={departments ?? []}
+  isLoading={isFetching}
+  isDisabled={isFetching}
+/>
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `name` | `string` | required | URL search param key synced with the selection |
+| `options` | `Option[]` | — | Selectable options |
+| `valueKey` | `string` | `"id"` | Option field used as the search param value |
+| `placeholder` | `string` | `"Select {name}"` | Placeholder text |
+| `isClearable` | `boolean` | `true` | Allow clearing back to no selection |
+| `isSearchable` | `boolean` | `true` | Allow typing to filter options |
+| `isDisabled` | `boolean` | `false` | Disable the control |
+| `isLoading` | `boolean` | `false` | Show the react-select loading indicator |
+| `saveToLocalStorage` | `boolean` | `false` | Persist the value under `name` and restore on mount |
+| `pageParam` | `string` | `"page"` | Pagination param reset to `1` when the selection changes |
+| `borderRadius` | `string` | `"12px"` | Radius applied to control, menu, and options |
+| `className` | `string` | — | Classes for the wrapper element |
+
+Also accepts standard `react-select` props (except `value`, `onChange`, `options`, `styles`,
+and `name`, which are managed internally).
+
+Selecting or clearing an option resets `page` to `1` in the same URL update, for the same
+reason as `SearchInput` — the filtered result has a different page count, so a stale page
+number would render an empty table. Re-selecting the option that is already active leaves
+the page alone, and screens without a `page` param are unaffected.
 
 ### Components — TooltipText
 
@@ -770,6 +879,7 @@ import {
   EztrakTabs,
   CustomPagination,
   SearchInput,
+  DropdownFilter,
   CustomCellEditor,
   Loader,
   Modal,
@@ -795,9 +905,9 @@ Opens on [http://localhost:6006](http://localhost:6006) with stories for `Eztrak
 | Subpath | Description |
 | --- | --- |
 | `@eztrak/shared` | Main entry — re-exports utils, hooks, and components |
-| `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, `ConfirmationAlertOptions`, `getItem`, `setItem`, `loadUserState`, `saveUserState`, date/format helpers, API error helpers, form field helpers |
+| `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, `ConfirmationAlertOptions`, `getItem`, `setItem`, `loadUserState`, `saveUserState`, `resetPageParam`, date/format helpers, API error helpers, form field helpers |
 | `@eztrak/shared/hooks` | `usePaginationUrlSync`, `useGridHeight` |
-| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `CustomCellEditor`, `SearchInput`, `ResetFiltersButton`, `TooltipText`, `ToolTip`, `CardSkeleton`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
+| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `CustomCellEditor`, `SearchInput`, `DropdownFilter`, `ResetFiltersButton`, `TooltipText`, `ToolTip`, `CardSkeleton`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
 | `@eztrak/shared/components/tabs.css` | Default tab styles (CSS variables) |
 | `@eztrak/shared/components/loader.css` | Loader spinner styles |
 
@@ -855,10 +965,11 @@ Keyboard: Arrow keys move between tabs; Home/End jump to first/last enabled tab.
 
 - Node.js 18+
 - React 18+ (for hooks and components)
-- `react-router-dom` — `CustomPagination`, `SearchInput`, `ResetFiltersButton`, and `usePaginationUrlSync` (optional peer; install if you use these)
+- `react-router-dom` — `CustomPagination`, `SearchInput`, `DropdownFilter`, `ResetFiltersButton`, and `usePaginationUrlSync` (optional peer; install if you use these)
 - `react-hot-toast` — toast feedback in `CustomCellEditor` and `handleApiError`
 - `sweetalert2` — `ResetColumnsButton` and `confirmationAlert`
 - `react-icons` — `CustomCellEditor`, `SearchInput`, and `Modal`
+- `react-select` — `DropdownFilter`
 - `react-tooltip` — `ToolTip` and `TooltipText`
 - `framer-motion` — `Modal`
 - Works with any bundler that supports the [Node.js `exports` field](https://nodejs.org/api/packages.html#exports)
