@@ -52,5 +52,22 @@ export type {
   PopupCellRendererProps,
   PopupDropDownContent,
 } from "./popup-cell-renderer/types";
+export {
+  ActionMenuItem,
+  ROW_ACTION_PRESETS,
+  RowActions,
+  resolveActions,
+} from "./row-actions";
+export type {
+  ActionMenuItemProps,
+  ResolvedRowAction,
+  RowAction,
+  RowActionFlag,
+  RowActionPreset,
+  RowActionPresetName,
+  RowActionsList,
+  RowActionsMode,
+  RowActionsProps,
+} from "./row-actions";
 export { TableErrorBoundary } from "./table-error-boundary/TableErrorBoundary";
 export type { TableErrorBoundaryProps } from "./table-error-boundary/types";
