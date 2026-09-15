@@ -57,13 +57,27 @@ export const InlineIcons: Story = {
   },
 };
 
+export const CustomHover: Story = {
+  args: {
+    data: sampleRow,
+    itemClassName: "hover:bg-gray-100 hover:text-gray-800",
+    actions: [
+      { preset: "edit", onClick: () => undefined },
+      { preset: "delete", onClick: () => undefined },
+    ],
+  },
+};
+
 export const CustomTooltip: Story = {
   args: {
     data: sampleRow,
     triggerTooltip: "More options",
+    tooltipPlacement: "right",
+    iconSize: 18,
     actions: [
       { preset: "edit", tooltip: "Edit this record", onClick: () => undefined },
       { preset: "delete", tooltip: false, onClick: () => undefined },
+      { type: "divider" },
       { preset: "notes", tooltip: "View pickup notes", onClick: () => undefined },
     ],
   },

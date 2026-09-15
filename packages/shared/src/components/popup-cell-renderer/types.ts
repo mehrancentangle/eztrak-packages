@@ -30,6 +30,8 @@ export interface PopupCellRendererProps<TRow = unknown> {
     hide: () => void,
   ) => void;
   placement?: TippyProps["placement"];
+  /** Default `"Row actions"`. */
+  ariaLabel?: string;
   tippyProps?: Omit<
     Partial<TippyProps>,
     "children" | "content" | "visible" | "placement"

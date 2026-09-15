@@ -54,6 +54,9 @@ export type {
 } from "./popup-cell-renderer/types";
 export {
   ActionMenuItem,
+  ROW_ACTION_DEFAULT_ICON_SIZE,
+  ROW_ACTION_DEFAULT_MENU_TOOLTIP_STYLE,
+  ROW_ACTION_ITEM_HOVER_CLASS,
   ROW_ACTION_PRESETS,
   RowActions,
   resolveActions,
@@ -62,12 +65,16 @@ export type {
   ActionMenuItemProps,
   ResolvedRowAction,
   RowAction,
+  RowActionConfirmFn,
   RowActionFlag,
+  RowActionItemRenderContext,
+  RowActionItemType,
   RowActionPreset,
   RowActionPresetName,
   RowActionsList,
   RowActionsMode,
   RowActionsProps,
+  RowActionsRenderContext,
 } from "./row-actions";
 export { TableErrorBoundary } from "./table-error-boundary/TableErrorBoundary";
 export type { TableErrorBoundaryProps } from "./table-error-boundary/types";

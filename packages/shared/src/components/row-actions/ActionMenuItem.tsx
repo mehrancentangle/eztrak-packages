@@ -1,17 +1,28 @@
 import { ToolTip } from "../tooltip/ToolTip";
 import { cn } from "../../utils/cn";
+import {
+  ROW_ACTION_DEFAULT_ICON_SIZE,
+  ROW_ACTION_DEFAULT_MENU_TOOLTIP_STYLE,
+  ROW_ACTION_ITEM_HOVER_CLASS,
+} from "./presets";
 import type { ActionMenuItemProps } from "./types";
-
-const MENU_TOOLTIP_STYLE = { zIndex: 10000 } as const;
 
 export function ActionMenuItem({
   label,
   icon: Icon,
+  iconSize = ROW_ACTION_DEFAULT_ICON_SIZE,
+  iconClassName,
   tooltip,
+  tooltipPlacement = "top",
+  tooltipDelayShow,
+  tooltipDelayHide,
+  tooltipClassName,
+  tooltipStyle,
   disabled = false,
   danger = false,
   highlight = false,
   showLabel = true,
+  className,
   onClick,
 }: ActionMenuItemProps) {
   const tooltipText = tooltip ?? label;
@@ -20,8 +31,12 @@ export function ActionMenuItem({
     <ToolTip
       text={tooltipText}
       disabled={!tooltipText}
+      placement={tooltipPlacement}
+      delayShow={tooltipDelayShow}
+      delayHide={tooltipDelayHide}
+      tooltipClassName={tooltipClassName}
+      tooltipStyle={{ ...ROW_ACTION_DEFAULT_MENU_TOOLTIP_STYLE, ...tooltipStyle }}
       className={showLabel ? "block w-full" : "inline-flex"}
-      tooltipStyle={MENU_TOOLTIP_STYLE}
     >
       <button
         type="button"
@@ -37,14 +52,19 @@ export function ActionMenuItem({
           showLabel
             ? "w-full rounded-xl px-3 py-2 text-left"
             : "justify-center rounded-md p-1",
-          disabled
-            ? "cursor-not-allowed opacity-50"
-            : "hover:bg-primary-50 hover:text-primary-150",
-          danger && !disabled && "text-red-500 hover:bg-red-50 hover:text-red-600",
+          disabled ? "cursor-not-allowed opacity-50" : ROW_ACTION_ITEM_HOVER_CLASS,
+          danger && "text-red-500",
           highlight && !danger && "text-primary-150",
+          className,
         )}
       >
-        {Icon ? <Icon className="shrink-0" aria-hidden size={16} /> : null}
+        {Icon ? (
+          <Icon
+            className={cn("shrink-0", iconClassName)}
+            aria-hidden
+            size={iconSize}
+          />
+        ) : null}
         {showLabel ? <span>{label}</span> : null}
       </button>
     </ToolTip>

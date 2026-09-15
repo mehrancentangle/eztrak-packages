@@ -3,6 +3,7 @@
 @source "../src/**/*.{ts,tsx}";
 
 @theme {
-  --color-primary-150: #ff7335;
+  --color-primary-50: #fff1eb;
+  --color-primary-150: #f54e00;
   --color-neutral-400: #9ca3af;
 }

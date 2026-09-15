@@ -22,6 +22,7 @@ export function PopupCellRenderer<TRow = unknown>({
   onAction,
   placement = "bottom-end",
   tippyProps,
+  ariaLabel = "Row actions",
 }: PopupCellRendererProps<TRow>) {
   const [visible, setVisible] = useState(false);
 
@@ -64,7 +65,7 @@ export function PopupCellRenderer<TRow = unknown>({
             "flex items-center justify-center gap-2 rounded-full text-gray-500 hover:text-gray-800",
             className,
           )}
-          aria-label="Row actions"
+          aria-label={ariaLabel}
         >
           {!hideTitle && title}
           <ActionIcon aria-hidden />
