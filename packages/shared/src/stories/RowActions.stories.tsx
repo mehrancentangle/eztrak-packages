@@ -57,6 +57,22 @@ export const InlineIcons: Story = {
   },
 };
 
+export const CustomIconAndLabelColor: Story = {
+  args: {
+    data: sampleRow,
+    actions: [
+      { preset: "edit", onClick: () => undefined },
+      { preset: "delete", onClick: () => undefined },
+      {
+        preset: "notes",
+        iconClassName: "text-primary-150",
+        labelClassName: "text-gray-700",
+        onClick: () => undefined,
+      },
+    ],
+  },
+};
+
 export const CustomHover: Story = {
   args: {
     data: sampleRow,

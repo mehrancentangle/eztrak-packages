@@ -1,4 +1,5 @@
 import { ROW_ACTION_PRESETS } from "./presets";
+import { cn } from "../../utils/cn";
 import type {
   ResolvedRowAction,
   RowAction,
@@ -70,6 +71,8 @@ export function resolveActions<TRow>(
       confirm: action.confirm,
       closeOnClick: action.closeOnClick !== false,
       className: action.className,
+      iconClassName: cn(preset?.iconClassName, action.iconClassName) || undefined,
+      labelClassName: action.labelClassName,
     };
 
     return [resolved];

@@ -53,6 +53,10 @@ export type RowAction<TRow = unknown> = {
   closeOnClick?: boolean;
   /** Extra classes on this item (merged after defaults; can override hover). */
   className?: string;
+  /** Extra classes on this item’s icon (overrides preset, e.g. `"text-red-500"`). */
+  iconClassName?: string;
+  /** Extra classes on this item’s label. */
+  labelClassName?: string;
 };
 
 export type RowActionsList<TRow = unknown> =
@@ -88,6 +92,8 @@ export interface RowActionsProps<TRow = unknown> {
    */
   itemClassName?: string;
   itemIconClassName?: string;
+  /** Extra classes on every item label. */
+  itemLabelClassName?: string;
   /** Default `16`. */
   iconSize?: number;
   /** Default `"Actions"`. Pass `false` to hide. */
@@ -134,6 +140,7 @@ export interface ActionMenuItemProps {
   highlight?: boolean;
   showLabel?: boolean;
   className?: string;
+  labelClassName?: string;
   onClick: () => void;
 }
 
@@ -153,10 +160,13 @@ export interface ResolvedRowAction<TRow = unknown> {
   confirm?: ConfirmationAlertOptions;
   closeOnClick: boolean;
   className?: string;
+  iconClassName?: string;
+  labelClassName?: string;
 }
 
 export interface RowActionPreset {
   label: string;
   icon: IconType;
   danger?: boolean;
+  iconClassName?: string;
 }

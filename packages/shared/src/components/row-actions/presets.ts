@@ -15,6 +15,9 @@ import type { RowActionPreset, RowActionPresetName } from "./types";
 export const ROW_ACTION_ITEM_HOVER_CLASS =
   "hover:bg-primary-50 hover:text-primary-150";
 
+/** Settings/Department rest color (`#6C757D`). */
+export const ROW_ACTION_ITEM_TEXT_CLASS = "text-secondary";
+
 export const ROW_ACTION_DEFAULT_ICON_SIZE = 16;
 
 export const ROW_ACTION_DEFAULT_MENU_TOOLTIP_STYLE: CSSProperties = {
@@ -23,7 +26,7 @@ export const ROW_ACTION_DEFAULT_MENU_TOOLTIP_STYLE: CSSProperties = {
 
 export const ROW_ACTION_PRESETS: Record<RowActionPresetName, RowActionPreset> = {
   edit: { label: "Edit", icon: FaEdit },
-  delete: { label: "Delete", icon: FaTrashAlt, danger: true },
+  delete: { label: "Delete", icon: FaTrashAlt, danger: true, iconClassName: "text-red-500" },
   view: { label: "View", icon: FaEye },
   notes: { label: "Notes", icon: FaFileAlt },
   history: { label: "History", icon: FaHistory },

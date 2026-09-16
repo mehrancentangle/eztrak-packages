@@ -44,6 +44,7 @@ export function RowActions<TRow = unknown>({
   menuClassName,
   itemClassName,
   itemIconClassName,
+  itemLabelClassName,
   iconSize = ROW_ACTION_DEFAULT_ICON_SIZE,
   triggerTooltip = "Actions",
   triggerAriaLabel = "Row actions",
@@ -101,7 +102,8 @@ export function RowActions<TRow = unknown>({
         label={action.label}
         icon={action.icon}
         iconSize={action.iconSize ?? iconSize}
-        iconClassName={itemIconClassName}
+        iconClassName={cn(itemIconClassName, action.iconClassName)}
+        labelClassName={cn(itemLabelClassName, action.labelClassName)}
         tooltip={action.tooltip}
         tooltipPlacement={action.tooltipPlacement ?? tooltipPlacement}
         tooltipDelayShow={tooltipDelayShow}
