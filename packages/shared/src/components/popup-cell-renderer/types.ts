@@ -32,6 +32,11 @@ export interface PopupCellRendererProps<TRow = unknown> {
   placement?: TippyProps["placement"];
   /** Default `"Row actions"`. */
   ariaLabel?: string;
+  /**
+   * When true, the menu opens on hover and closes on leave.
+   * Default `false` (click to open).
+   */
+  openOnHover?: boolean;
   tippyProps?: Omit<
     Partial<TippyProps>,
     "children" | "content" | "visible" | "placement"

@@ -50,6 +50,7 @@ export function RowActions<TRow = unknown>({
   triggerAriaLabel = "Row actions",
   hasPermission,
   placement = "bottom-end",
+  openOnHover = false,
   tippyProps,
   presets,
   confirmFn = confirmationAlert,
@@ -194,6 +195,7 @@ export function RowActions<TRow = unknown>({
         hideTitle
         className={className}
         placement={placement}
+        openOnHover={openOnHover}
         tippyProps={tippyProps}
         ariaLabel={triggerAriaLabel}
         dropDownContent={(handleAction) =>

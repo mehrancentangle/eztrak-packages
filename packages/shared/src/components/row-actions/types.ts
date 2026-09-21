@@ -101,6 +101,11 @@ export interface RowActionsProps<TRow = unknown> {
   triggerAriaLabel?: string;
   hasPermission?: (permission: string) => boolean;
   placement?: TippyProps["placement"];
+  /**
+   * When true, the menu opens on hover and closes on leave.
+   * Default `false` (click to open).
+   */
+  openOnHover?: boolean;
   tippyProps?: PopupCellRendererProps<TRow>["tippyProps"];
   /** Override default `Fa*` preset icons/labels for this instance. */
   presets?: Partial<Record<RowActionPresetName, Partial<RowActionPreset>>>;

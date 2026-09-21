@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Tippy from "@tippyjs/react";
 import type { TippyProps } from "@tippyjs/react";
 import { BiDotsVerticalRounded } from "react-icons/bi";
@@ -23,11 +23,16 @@ export function PopupCellRenderer<TRow = unknown>({
   placement = "bottom-end",
   tippyProps,
   ariaLabel = "Row actions",
+  openOnHover = false,
 }: PopupCellRendererProps<TRow>) {
   const [visible, setVisible] = useState(false);
+  const instanceRef = useRef<{ hide: () => void } | null>(null);
 
   const show = () => setVisible(true);
-  const hide = () => setVisible(false);
+  const hide = () => {
+    setVisible(false);
+    instanceRef.current?.hide();
+  };
 
   const rowData = params?.data;
 
@@ -41,12 +46,21 @@ export function PopupCellRenderer<TRow = unknown>({
       ? dropDownContent(handleAction)
       : dropDownContent;
 
+  const hoverOrClickProps: Partial<TippyProps> = openOnHover
+    ? {
+        trigger: "mouseenter",
+        delay: [0, 150],
+        hideOnClick: false,
+      }
+    : {
+        visible,
+        onClickOutside: hide,
+      };
+
   return (
     <div className="flex h-full">
       <Tippy
         content={content}
-        visible={visible}
-        onClickOutside={hide}
         allowHTML
         arrow={false}
         appendTo={() => document.body}
@@ -56,11 +70,15 @@ export function PopupCellRenderer<TRow = unknown>({
         theme="light"
         maxWidth="none"
         offset={[0, 5]}
+        onCreate={(instance) => {
+          instanceRef.current = instance;
+        }}
+        {...hoverOrClickProps}
         {...tippyProps}
       >
         <button
           type="button"
-          onClick={visible ? hide : show}
+          onClick={openOnHover ? undefined : visible ? hide : show}
           className={cn(
             "flex items-center justify-center gap-2 rounded-full text-gray-500 hover:text-gray-800",
             className,

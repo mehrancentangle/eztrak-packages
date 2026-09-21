@@ -84,6 +84,18 @@ export const CustomHover: Story = {
   },
 };
 
+export const OpenOnHover: Story = {
+  args: {
+    data: sampleRow,
+    openOnHover: true,
+    triggerTooltip: false,
+    actions: [
+      { preset: "edit", onClick: () => undefined },
+      { preset: "delete", onClick: () => undefined },
+    ],
+  },
+};
+
 export const CustomTooltip: Story = {
   args: {
     data: sampleRow,
