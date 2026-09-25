@@ -11,6 +11,15 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
+  // tsup otherwise deletes `import './Loader.css'` from the published JS.
+  // Re-emit it as the package CSS export so consumers still load the sheet.
+  injectStyle(css, fileId) {
+    const normalized = fileId.replace(/\\/g, "/");
+    if (normalized.endsWith("/Loader/Loader.css")) {
+      return 'import "@eztrak/shared/components/loader.css";';
+    }
+    return `import styleInject from '#style-inject';styleInject(${css})`;
+  },
   external: [
     "@tippyjs/react",
     "framer-motion",
@@ -26,5 +35,6 @@ export default defineConfig({
     "react-tooltip",
     "sweetalert2",
     "tippy.js",
+    "@eztrak/shared/components/loader.css",
   ],
 });
