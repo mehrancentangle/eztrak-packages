@@ -17,6 +17,7 @@ export interface SidebarProps extends HTMLAttributes<HTMLDivElement> {
   footer?: ReactNode;
   items?: SidebarItem[];
   logoUrl?: string;
+  logoRouteUrl?: string;
   logoAltText?: string;
   collapseButtonText?: ReactNode;
   expandButtonText?: ReactNode;
