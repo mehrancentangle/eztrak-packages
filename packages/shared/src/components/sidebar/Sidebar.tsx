@@ -184,6 +184,7 @@ export function Sidebar({
             return (
               <div
                 key={index}
+                data-sidebar-item={item.name}
                 className={cn(
                   "has-sub-items max-w-full min-w-0 flex flex-col",
                   collapsed ? "my-1" : "my-2"
