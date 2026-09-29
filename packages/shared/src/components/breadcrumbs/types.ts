@@ -18,4 +18,11 @@ export interface BreadcrumbsProps {
   prefix?: ReactNode;
   suffix?: ReactNode;
   nonClickablePaths?: string[];
+  backgroundColor?: string;
+  inactiveColor?: string;
+  activeColor?: string;
+  separatorColor?: string;
+  iconColor?: string;
+  iconClassName?: string;
+  showHome?: boolean;
 }

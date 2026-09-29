@@ -1,10 +1,48 @@
-import { Fragment } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "../../utils/cn";
 import type { BreadcrumbRoute, BreadcrumbsProps } from "./types";
 
-const INACTIVE_LINK_CLASS =
-  "inline-flex items-center justify-center text-[#5D6D7F] bg-white px-4 py-2 rounded-lg transition-colors duration-300 hover:text-[#516378]";
+const DEFAULT_BACKGROUND = "#F7F7F5";
+const DEFAULT_INACTIVE = "#6B7280";
+const DEFAULT_ACTIVE = "#111111";
+const DEFAULT_SEPARATOR = "#9CA3AF";
+
+const CRUMB_LAYOUT =
+  "inline-flex items-center gap-1.5 whitespace-nowrap leading-5 rounded-sm";
+
+const LINK_INTERACTION =
+  "font-normal transition-colors duration-200 motion-reduce:transition-none hover:!text-[color-mix(in_srgb,var(--bc-inactive)_65%,#111111)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111111]";
+
+type BreadcrumbNavStyle = CSSProperties & {
+  "--bc-inactive": string;
+};
+
+function BreadcrumbChevron() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <path
+        d="M4.5 2.5L8 6L4.5 9.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 function asTitleMap(
   customTitles: BreadcrumbsProps["customTitles"]
@@ -41,23 +79,38 @@ function getLastParam(str: string) {
     : str.split("/").pop();
 }
 
+type Crumb = {
+  key: string;
+  to: string;
+  title: string;
+  icon: ReactNode | null;
+  isCurrent: boolean;
+  isLink: boolean;
+};
+
 export function Breadcrumbs({
   routes = [],
   containerClassName,
   linkClassName = "",
   separatorClassName = "",
-  separator = "/",
-  activeClassName = "font-bold whitespace-pre",
+  separator,
+  activeClassName = "font-semibold",
   customTitles = {},
   customIcons = {},
   prefix,
   suffix,
   nonClickablePaths = [],
+  backgroundColor = DEFAULT_BACKGROUND,
+  inactiveColor = DEFAULT_INACTIVE,
+  activeColor = DEFAULT_ACTIVE,
+  separatorColor = DEFAULT_SEPARATOR,
+  iconColor,
+  iconClassName,
+  showHome = false,
 }: BreadcrumbsProps) {
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((segment) => segment);
   const titles = asTitleMap(customTitles);
-  const inactiveLinkClassName = cn(INACTIVE_LINK_CLASS, linkClassName);
 
   const getTitle = (pathname: string) => {
     const match = findRoute(pathname, routes);
@@ -65,14 +118,11 @@ export function Breadcrumbs({
       return match.title;
     }
 
-    const titleKeys = Object.keys(titles);
-    const paramMatch =
-      pathname.split("/").find((segment) => titleKeys.includes(segment)) || "";
-    if (paramMatch && titles[paramMatch]) {
-      return titles[paramMatch];
+    const lastParamPath = getLastParam(pathname);
+    if (lastParamPath && titles[lastParamPath]) {
+      return titles[lastParamPath];
     }
 
-    const lastParamPath = getLastParam(pathname);
     if (lastParamPath) {
       return lastParamPath;
     }
@@ -81,57 +131,134 @@ export function Breadcrumbs({
   };
 
   const getIcon = (pathname: string) => {
-    const iconKeys = Object.keys(customIcons);
-    const matchedSegment = pathname
-      .split("/")
-      .find((segment) => iconKeys.includes(segment));
-    if (matchedSegment && customIcons[matchedSegment]) {
-      return customIcons[matchedSegment];
+    const segment = getLastParam(pathname);
+    if (segment && customIcons[segment]) {
+      return customIcons[segment];
     }
     return null;
   };
 
+  const crumbs: Crumb[] = [];
+
+  if (showHome) {
+    crumbs.push({
+      key: "home",
+      to: "/",
+      title: titles.home || "Home",
+      icon: customIcons.home ?? null,
+      isCurrent: pathnames.length === 0,
+      isLink: pathnames.length > 0,
+    });
+  }
+
+  pathnames.forEach((segment, index) => {
+    const to = `/${pathnames.slice(0, index + 1).join("/")}`;
+    const isCurrent = index === pathnames.length - 1;
+    const isNonClickable = nonClickablePaths.some(
+      (token) => to.includes(token) || segment === token
+    );
+
+    crumbs.push({
+      key: to,
+      to,
+      title: getTitle(to),
+      icon: getIcon(to),
+      isCurrent,
+      isLink: !isCurrent && !isNonClickable,
+    });
+  });
+
+  const navStyle: BreadcrumbNavStyle = {
+    backgroundColor,
+    "--bc-inactive": inactiveColor,
+  };
+
+  const inactiveClassName = cn(CRUMB_LAYOUT, LINK_INTERACTION, linkClassName);
+  const staticInactiveClassName = cn(CRUMB_LAYOUT, "font-normal", linkClassName);
+  const currentClassName = cn(CRUMB_LAYOUT, activeClassName);
+
+  const renderCrumb = (crumb: Crumb) => {
+    const content = (
+      <>
+        {crumb.icon ? (
+          <span
+            className={cn("inline-flex shrink-0 items-center", iconClassName)}
+            style={iconColor ? { color: iconColor } : undefined}
+          >
+            {crumb.icon}
+          </span>
+        ) : null}
+        {crumb.title}
+      </>
+    );
+
+    if (crumb.isCurrent) {
+      return (
+        <span
+          className={currentClassName}
+          style={{ color: activeColor }}
+          aria-current="page"
+        >
+          {content}
+        </span>
+      );
+    }
+
+    if (crumb.isLink) {
+      return (
+        <Link
+          to={crumb.to}
+          className={inactiveClassName}
+          style={{ color: inactiveColor }}
+        >
+          {content}
+        </Link>
+      );
+    }
+
+    return (
+      <span className={staticInactiveClassName} style={{ color: inactiveColor }}>
+        {content}
+      </span>
+    );
+  };
+
   return (
-    <div
+    <nav
+      aria-label="Breadcrumb"
       className={cn(
-        "flex flex-row gap-2 items-center text-sm text-secondary",
+        "flex w-full flex-row items-center gap-2 overflow-x-auto px-4 py-3 text-sm leading-5",
         containerClassName
       )}
+      style={navStyle}
     >
-      {prefix && <div className="breadcrumb-prefix">{prefix}</div>}
-      <Link to="/" className={inactiveLinkClassName}>
-        {customIcons.home && <span className="mr-1">{customIcons.home}</span>}
-        {titles.home || "Home"}
-      </Link>
-      {pathnames.map((segment, index) => {
-        const to = `/${pathnames.slice(0, index + 1).join("/")}`;
-        const isLast = index === pathnames.length - 1;
-        const title = getTitle(to);
-        const icon = getIcon(to);
-        const isNonClickable = nonClickablePaths.some(
-          (token) => to.includes(token) || segment === token
-        );
-        const crumb = (
-          <>
-            {icon && <span className="mr-1">{icon}</span>}
-            {title}
-          </>
-        );
-
-        return (
-          <Fragment key={to}>
-            <span className={separatorClassName}>{separator}</span>
-            {isLast || isNonClickable ? (
-              <span className={isLast ? activeClassName : linkClassName}>{crumb}</span>
-            ) : (
-              <Link to={to} className={inactiveLinkClassName}>
-                {crumb}
-              </Link>
-            )}
-          </Fragment>
-        );
-      })}
-      {suffix && <div className="breadcrumb-suffix">{suffix}</div>}
-    </div>
+      {prefix ? <div className="breadcrumb-prefix">{prefix}</div> : null}
+      <ol className="flex min-w-0 flex-row flex-nowrap items-center gap-2">
+        {crumbs.map((crumb, index) => (
+          <li key={crumb.key} className="inline-flex items-center gap-2">
+            {index > 0 ? (
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "inline-flex shrink-0 items-center",
+                  separatorClassName
+                )}
+                style={{ color: separatorColor }}
+              >
+                {separator === undefined ? (
+                  <BreadcrumbChevron />
+                ) : isValidElement(separator) ? (
+                  cloneElement(separator)
+                ) : (
+                  separator
+                )}
+              </span>
+            ) : null}
+            {renderCrumb(crumb)}
+          </li>
+        ))}
+      </ol>
+      {suffix ? <div className="breadcrumb-suffix">{suffix}</div> : null}
+    </nav>
   );
 }
