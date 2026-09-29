@@ -469,6 +469,121 @@ export function createCellEditorOnSave(invalidate = []) {
 
 Save is disabled when the value is unchanged (compares as strings so `42` and `"42"` are treated as equal). Pressing Enter while a save is in progress does not submit twice.
 
+### Components — Breadcrumbs
+
+URL-driven trail for the current page. It reads `useLocation()` from `react-router-dom`, so it must render inside a router. The path is split on `/`, and each segment becomes one crumb. Ancestor crumbs are links. The last crumb is the current page: it is not a link, and it is marked with `aria-current="page"`.
+
+On `/events/1q27-crude-coker/coker-ta27/budget` the default trail is:
+
+`Events > 1Q27 Crude & Coker > Coker TA27 > Budget`
+
+when those segments are labeled with `customTitles`. Without a label, the raw segment is shown.
+
+A crumb's label is chosen in this order:
+
+1. `routes` — a matching `BreadcrumbRoute` whose full path equals that crumb
+2. `customTitles` — the entry for **that crumb's own segment** (not an earlier segment in the path)
+3. The segment text itself
+
+`customIcons` uses the same segment key. An icon on `events` appears only on the Events crumb.
+
+The default look is a flat bar: off-white background (`#F7F7F5`), 14px gray ancestor text (`#6B7280`), a 12px chevron (`#9CA3AF`), and a semibold near-black current page (`#111111`). There is no Home crumb unless `showHome` is set. Hover darkens a link without moving it. Keyboard focus draws an outline. Color props are inline styles, so they override the default colors. Class name props still merge for layout and typography.
+
+```tsx
+import { Breadcrumbs } from "@eztrak/shared/components";
+
+<Breadcrumbs
+  customTitles={{
+    events: "Events",
+    "1q27-crude-coker": "1Q27 Crude & Coker",
+    "coker-ta27": "Coker TA27",
+    budget: "Budget",
+  }}
+/>
+```
+
+#### Colors, separator, and icons
+
+```tsx
+import { HiCalendar } from "react-icons/hi";
+
+<Breadcrumbs
+  customTitles={titles}
+  customIcons={{ events: <HiCalendar size={14} aria-hidden /> }}
+  backgroundColor="#EEF2FF"
+  inactiveColor="#4338CA"
+  activeColor="#1E1B4B"
+  separatorColor="#A5B4FC"
+  iconColor="#4338CA"
+/>
+
+// Slash instead of the default chevron
+<Breadcrumbs customTitles={titles} separator="/" />
+```
+
+Omit `iconColor` and each icon inherits that crumb's text color (gray on ancestors, the active color on the current page).
+
+#### Home, static crumbs, and route titles
+
+```tsx
+// Prepend Home (links to "/"). Label it with customTitles.home.
+<Breadcrumbs showHome customTitles={{ home: "Dashboard", events: "Events" }} />
+
+// Render a segment as text instead of a link
+<Breadcrumbs nonClickablePaths={["coker-ta27"]} customTitles={titles} />
+
+// Titles from a route tree. A route title wins over customTitles.
+<Breadcrumbs
+  routes={[
+    {
+      path: "events",
+      title: "Events",
+      children: [{ path: "budget", title: "Budget" }],
+    },
+  ]}
+/>
+```
+
+`nonClickablePaths` matches a segment exactly, or any crumb whose path includes the token.
+
+#### Layout hooks
+
+```tsx
+<Breadcrumbs
+  customTitles={titles}
+  prefix={<span>App</span>}
+  suffix={<span>Draft</span>}
+  containerClassName="px-6"
+  linkClassName="uppercase tracking-wide"
+  activeClassName="font-bold"
+  separatorClassName="mx-1"
+  iconClassName="h-4 w-4"
+/>
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `routes` | `BreadcrumbRoute[]` | `[]` | Nested `{ path, title?, children? }` used to title a crumb when the built path matches |
+| `customTitles` | `Record<string, string>` | `{}` | Label for a path segment. Key `home` labels the Home crumb |
+| `customIcons` | `Record<string, ReactNode>` | `{}` | Icon for a path segment. Key `home` icons the Home crumb |
+| `showHome` | `boolean` | `false` | Prepend a Home crumb that links to `/` |
+| `nonClickablePaths` | `string[]` | `[]` | Segments (or path substrings) rendered as text instead of links |
+| `separator` | `ReactNode` | chevron | Node between crumbs. Pass `"/"` or your own icon |
+| `prefix` | `ReactNode` | — | Content before the trail |
+| `suffix` | `ReactNode` | — | Content after the trail |
+| `backgroundColor` | `string` | `"#F7F7F5"` | Bar background |
+| `inactiveColor` | `string` | `"#6B7280"` | Ancestor and non-clickable text |
+| `activeColor` | `string` | `"#111111"` | Current page text |
+| `separatorColor` | `string` | `"#9CA3AF"` | Separator color |
+| `iconColor` | `string` | inherits text | Icon color. Omitted icons use the crumb text color |
+| `iconClassName` | `string` | — | Classes for each crumb icon |
+| `containerClassName` | `string` | — | Classes merged onto the `<nav>` |
+| `linkClassName` | `string` | — | Classes for ancestor and non-clickable crumbs |
+| `activeClassName` | `string` | `"font-semibold"` | Classes for the current page |
+| `separatorClassName` | `string` | — | Classes for the separator |
+
+Color props win over text and background utilities in the class name props. Use the class name props for spacing, weight, and case.
+
 ### Components — ResetFiltersButton
 
 Clears all URL search params (`react-router-dom`) in one click. Self-contained — no app `Button` needed.
@@ -878,6 +993,7 @@ import {
   useGridHeight,
   EztrakTabs,
   CustomPagination,
+  Breadcrumbs,
   SearchInput,
   DropdownFilter,
   CustomCellEditor,
@@ -898,7 +1014,7 @@ npm run storybook
 npm run storybook
 ```
 
-Opens on [http://localhost:6006](http://localhost:6006) with stories for `EztrakTabs`, `CustomPagination`, `ResetColumnsButton`, `CustomCellEditor`, and `Loader`.
+Opens on [http://localhost:6006](http://localhost:6006) with stories for `Breadcrumbs`, `EztrakTabs`, `CustomPagination`, `ResetColumnsButton`, `CustomCellEditor`, and `Loader`.
 
 ## Exports
 
@@ -907,7 +1023,7 @@ Opens on [http://localhost:6006](http://localhost:6006) with stories for `Eztrak
 | `@eztrak/shared` | Main entry — re-exports utils, hooks, and components |
 | `@eztrak/shared/utils` | `cn`, `handleApiError`, `confirmationAlert`, `ConfirmationAlertOptions`, `getItem`, `setItem`, `loadUserState`, `saveUserState`, `resetPageParam`, date/format helpers, API error helpers, form field helpers |
 | `@eztrak/shared/hooks` | `usePaginationUrlSync`, `useGridHeight` |
-| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `CustomCellEditor`, `SearchInput`, `DropdownFilter`, `ResetFiltersButton`, `TooltipText`, `ToolTip`, `CardSkeleton`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
+| `@eztrak/shared/components` | `EztrakTabs`, `CustomPagination`, `Breadcrumbs`, `CustomCellEditor`, `SearchInput`, `DropdownFilter`, `ResetFiltersButton`, `TooltipText`, `ToolTip`, `CardSkeleton`, `Modal`, `Loader`, `TableLayoutToolbarControls`, `ResetColumnsButton`, and related types |
 | `@eztrak/shared/components/tabs.css` | Default tab styles (CSS variables) |
 | `@eztrak/shared/components/loader.css` | Loader spinner styles |
 
@@ -965,7 +1081,7 @@ Keyboard: Arrow keys move between tabs; Home/End jump to first/last enabled tab.
 
 - Node.js 18+
 - React 18+ (for hooks and components)
-- `react-router-dom` — `CustomPagination`, `SearchInput`, `DropdownFilter`, `ResetFiltersButton`, and `usePaginationUrlSync` (optional peer; install if you use these)
+- `react-router-dom` — `Breadcrumbs`, `CustomPagination`, `SearchInput`, `DropdownFilter`, `ResetFiltersButton`, and `usePaginationUrlSync` (optional peer; install if you use these)
 - `react-hot-toast` — toast feedback in `CustomCellEditor` and `handleApiError`
 - `sweetalert2` — `ResetColumnsButton` and `confirmationAlert`
 - `react-icons` — `CustomCellEditor`, `SearchInput`, and `Modal`
